@@ -1,0 +1,23 @@
+================
+Evasion WebAdmin
+================
+
+Oisin Mulvihill, 2009-12-03
+
+This allows all configuration to be changed for agents, controllers and other
+third party config and log files via a web based interface. This interface can
+be integrated into applications or viewed directly in a web browser.
+
+* Webadmin is a simple pylons app.
+* Webadmin can stop/start/restart/reload agents in the director.
+* Webadmin can stop/start/restart/reload controllers in the director.
+* Webadmin is hooked into the event system and can subscribe to and recieve signals/events.
+* Director collects Config and Logging information from others on the system.
+* Agents/Controllers can send EVT_CONFIG_DETAILS + dict with a list of local files (log/ini) to edit.
+* Webadmin Asks the director via EVT_CONFIGURATIONS for all the config details.
+* Webadmin renders each config file in a tab holding some kind of plain text editor.
+* Webadmin renders log files with an option to tail them to see them happening in real time.
+* The webadmin is password protected and via a web browser requires a username/password to gain access.
+* Third parties on the event system can request a session which will allows them to login directly via embeded browser.
+
+

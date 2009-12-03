@@ -1,0 +1,8 @@
+evasion_webadmin.egg-info
+temp/
+*.log
+*.cfg
+*.ini
+dist
+build
+*.egg
