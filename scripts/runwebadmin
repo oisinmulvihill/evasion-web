@@ -1,9 +1,9 @@
 """
 I took this from the pylons list:
-
-   http://www.mail-archive.com/pylons-discuss@googlegroups.com/msg08951.html
    
-This should allow me to bbfreeze the webadmin web server - Oisin 2009-12-03.   
+   http://www.mail-archive.com/pylons-discuss@googlegroups.com/msg08951.html
+
+This should allow me to bbfreeze the webadmin web server - Oisin 2009-12-03.
 
 
 Run the standalone on the console similar to "paster serve".
@@ -21,6 +21,7 @@ import logging.config
 import optparse
 import os
 
+
 from paste.deploy.loadwsgi import NicerConfigParser
 
 # Server class and corresponding 'use=' value in config
@@ -35,14 +36,14 @@ from webadmin.config.middleware import make_app as app_factory
 
 def get_config(cp, section, expected_use_value):
     """Get a section from an INI-style config file as a dict.
-
+    
     ``cp`` -- NicerConfigParser.
     ``section`` -- the section to read.
     ``expected_use_value`` -- expected value of ``use`` option in the section.
-
+    
     Aborts if the value of ``use`` doesn't equal the expected value.  This
     indicates Paster would instantiate a different object than we're expecting.
-
+    
     The ``use`` key is removed from the dict before returning.
     """
     defaults = cp.defaults()
@@ -60,16 +61,15 @@ def get_config(cp, section, expected_use_value):
         msg %= (section, expected_use_value, use)
         raise EnvironmentError(msg)
     return ret
-
-    
-def app_main():
-        messenger.run(mymain)
     
 
 def go(ini_file):
+    """
+    """
     ini_file = os.path.abspath(ini_file)
     if not os.path.exists(ini_file):
         raise OSError("File %s not found" % ini_file)
+    
     config_dir = os.path.dirname(ini_file)
     logging.config.fileConfig(ini_file)
     cp = NicerConfigParser(ini_file)
@@ -79,40 +79,44 @@ def go(ini_file):
     cp._defaults.setdefault("__file__", ini_file)
     server_conf = get_config(cp, "server:main", "egg:Paste#http")
     
-    print "server_conf: ", server_conf
+    print "server_conf: ", dir(cp)
     
     app_conf = get_config(cp, "app:main", "egg:evasion-webadmin")
     app = app_factory(global_conf, **app_conf)
     serve = server_factory(app, global_conf, **server_conf)
-
-    # messenger_state = cherrypy.config.get("state", 'off', path="Messenger")
-    # if messenger_state == "on":
-        ##Enable the messaging service:
-        
-        # import messenger
     
-        # stomp_cfg = dict(
-            # host = cherrypy.config.get("host", path="Messenger"),
-            # port = cherrypy.config.get("port", path="Messenger"),
-            # username = cherrypy.config.get("username", path="Messenger"),
-            # password = cherrypy.config.get("password", path="Messenger"), 
-            # channel = cherrypy.config.get("channel", path="Messenger"), 
-        # )
-
-        ##Set up the messenger stomp protocol and run with the appmain:        
-        # messenger.stompprotocol.setup(stomp_cfg)
-        # def mymain(isExit):
-            # turbogears.start_server(root)
-
-
-    serve(app)   # Serves forever until ctrl-C pressed.
+    messenger_state = cp.get("Messenger", "state", 'off')
+    if messenger_state == "on":
+        #Enable the messaging service:
+        import messenger        
+        
+        stomp_cfg = dict(
+            host = cp.get("Messenger", "host"),
+            port = cp.get("Messenger", "port"),
+            username = cp.get("Messenger", "username"),
+            password = cp.get("Messenger", "password"),
+            channel = cp.get("Messenger", "channel"),
+        )
+        
+        #Set up the messenger stomp protocol and run with the appmain:
+        messenger.stompprotocol.setup(stomp_cfg)
+        
+        # Run the webapp in its own thread, with the mainloop for twisted.
+        def mymain(isExit):
+            serve(app)
+            
+        messenger.run(mymain)
+        
+    
+    else:    
+        serve(app)   # Serves forever until ctrl-C pressed.
 
 def main():
     parser = optparse.OptionParser(usage="%prog   development.ini")
     opts, args = parser.parse_args()
     if len(args) != 1:
         parser.error("wrong number of command-line arguments")
-        
+    
     go(args[0])
 
 if __name__ == "__main__":
