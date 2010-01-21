@@ -24,10 +24,8 @@ webadmin/lib/app_globals.py
 webadmin/lib/base.py
 webadmin/lib/helpers.py
 webadmin/model/__init__.py
-webadmin/public/bg.png
 webadmin/public/favicon.ico
 webadmin/public/index.html
-webadmin/public/pylons-logo.gif
 webadmin/tests/__init__.py
 webadmin/tests/test_models.py
 webadmin/tests/functional/__init__.py
