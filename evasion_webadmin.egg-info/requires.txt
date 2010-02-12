@@ -1,1 +1,7 @@
 Pylons>=0.9.7
+repoze.tm2 >= 1.0a4
+repoze.what
+repoze.what-pylons
+repoze.what.plugins.ini>=0.2.2
+repoze.who-friendlyform>=1.0b2
+fcrypt

@@ -1,4 +1,8 @@
-"""Pylons middleware initialization"""
+"""Pylons middleware initialization
+"""
+import sys
+import logging
+
 from beaker.middleware import CacheMiddleware, SessionMiddleware
 from paste.cascade import Cascade
 from paste.registry import RegistryManager
@@ -8,8 +12,71 @@ from pylons import config
 from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
+from pylons.util import class_name_from_module_name
 
+from webadmin.config.repozewhomid import add_auth
 from webadmin.config.environment import load_environment
+
+
+def get_log():
+    return logging.getLogger('webadmin.config.middleware')
+
+
+class WebAdminApp(PylonsApp):
+    """
+    This class overrides the controller resolution, so
+    it will be looked for in multiple locations.
+    
+    """
+    def find_controller(self, controller):
+        """Locates a controller by attempting to import it then grab
+        the SomeController instance from the imported module.
+        
+        Override this to change how the controller object is found once
+        the URL has been resolved.
+        
+        """
+        controller_paths = config['pylons.paths']['controllers']
+        
+        get_log().debug("find_controller: looking for '%s' in paths '%s'." % (
+            controller, 
+            controller_paths
+        ))
+        
+        # This is mostly a copy of the Pylons version we're overriding.
+        # The only difference is that all controllers must be in the 
+        # for <package> . <controllers dir> . <controller name>
+        #
+        full_module_name = controller
+        
+        # Check to see if we've cached the class instance for this name
+        if controller in self.controller_classes:
+            return self.controller_classes[controller]
+
+        # Hide the traceback here if the import fails (bad syntax and such)
+        __traceback_hide__ = 'before_and_this'
+        
+        __import__(full_module_name)
+        
+        if hasattr(sys.modules[full_module_name], '__controller__'):
+            mycontroller = getattr(sys.modules[full_module_name],
+                sys.modules[full_module_name].__controller__)
+                
+        else:
+            module_name = controller.split('.')[-1]
+            class_name = module_name.title() + 'Controller'
+            get_log().debug(
+                "Found controller, module: '%s', class: '%s'",
+                full_module_name, 
+                class_name
+            )
+            mycontroller = getattr(sys.modules[full_module_name], class_name)
+            
+        self.controller_classes[controller] = mycontroller
+            
+        return mycontroller
+
+
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     """Create a Pylons WSGI application and return it
@@ -38,7 +105,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     load_environment(global_conf, app_conf)
 
     # The Pylons WSGI app
-    app = PylonsApp()
+    app = WebAdminApp()
 
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
@@ -46,6 +113,25 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     app = CacheMiddleware(app, config)
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+
+    # Set up the repoze.who auth:
+    #
+    sitename = app_conf.get('sitename','')
+    sessionname = app_conf.get('beaker.session.key')
+    sessionsecret = app_conf.get('beaker.session.secret')
+    groupfile = app_conf.get('groupfile','')
+    passwordfile = app_conf.get('passwordfile','')
+    permissionfile = app_conf.get('permissionfile','')
+
+    app = add_auth(
+        app,
+        sitename,
+        sessionname,
+        sessionsecret,
+        passwordfile,
+        groupfile,
+        permissionfile
+    )
 
     if asbool(full_stack):
         # Handle Python exceptions
@@ -63,7 +149,10 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     if asbool(static_files):
         # Serve static files
-        static_app = StaticURLParser(config['pylons.paths']['static_files'])
-        app = Cascade([static_app, app])
+        static_apps = [
+            StaticURLParser(path) for path in config['pylons.paths']['static_files']
+        ]
+        app = Cascade(static_apps + [app,])
+
 
     return app

@@ -1,5 +1,7 @@
 """Pylons environment configuration"""
 import os
+import pprint
+import logging
 
 from mako.lookup import TemplateLookup
 from pylons import config
@@ -10,21 +12,81 @@ import webadmin.lib.helpers
 from webadmin.config.routing import make_map
 
 
+def get_log():
+    return logging.getLogger('webadmin.config.environment')
+
+
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
     object
     """
     # Pylons paths
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    paths = dict(root=root,
-                 controllers=os.path.join(root, 'controllers'),
-                 static_files=os.path.join(root, 'public'),
-                 templates=[os.path.join(root, 'templates')])
+    
+    controller_list = [
+        os.path.join(root, 'controllers'),
+    ]
+    get_log().debug("load_environment: controller search dirs %s " % controller_list)
+    
+    template_list = [
+        os.path.join(root, 'templates'), 
+    ]
+    get_log().debug("load_environment: template search dirs %s " % template_list)
+    
+    static_dir_list = [
+        os.path.join(root, 'public'),
+    ]
+    get_log().debug("load_environment: static search dirs %s " % static_dir_list)
+
+    # Create the base routing
+    map = make_map()
+    
+    # Check if the director is present then ask for webadmin modules:
+    from director.signals import SignalsSender
+    director = SignalsSender()
+    director.ping()
+    modules = director.webadminModules()
+    get_log().info("load_environment: director webadmin modules '%s'." % modules)
+    
+    # Attempt to load and set up the webadmin modules the director
+    # has returned. These modules need to be in the path that the
+    # evasion-webadmin looks in for python imports.
+    #
+    for module in modules:
+        try:
+            get_log().info("load_environment: loading module '%s'." % module['webadmin'])
+            m = __import__(module['webadmin'])
+            
+        except ImportError, e:
+            get_log().error("load_environment: unable to load module '%s'." % module['webadmin'])
+            
+        else:
+            try:
+                rdict = m.configure(map)
+                controller_list.append(rdict['controllers'])
+                static_dir_list.append(rdict['static'])
+                template_list.append(rdict['templates'])
+                map = rdict['map']
+                get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
+
+            except:
+                get_log().exception("load_environment: module '%s' configuration error - " % module['webadmin'])
+
+    # Save the routes mapping:
+    config['routes.map'] = map
+    
+    paths = dict(
+        root=root,
+        controllers=controller_list, 
+        static_files=static_dir_list,
+        templates=template_list ,
+    )
+    get_log().debug("load_environment: webadmin final paths:\n\n%s\n" % pprint.pformat(rdict))
 
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='webadmin', paths=paths)
 
-    config['routes.map'] = make_map()
+    config['routes.map'] = map
     config['pylons.app_globals'] = app_globals.Globals()
     config['pylons.h'] = webadmin.lib.helpers
 

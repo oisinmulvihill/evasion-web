@@ -14,6 +14,12 @@ setup(
     url='',
     install_requires=[
         "Pylons>=0.9.7",
+        "repoze.tm2 >= 1.0a4",        
+        "repoze.what",
+        "repoze.what-pylons",
+        "repoze.what.plugins.ini>=0.2.2",
+        "repoze.who-friendlyform>=1.0b2",
+        "fcrypt",
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),

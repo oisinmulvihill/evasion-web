@@ -16,11 +16,13 @@ different than what it intends to load.
 Make sure you've installed the application, Pylons, and any other dependencies
 before running this.
 """
-import logging
-import logging.config
-import optparse
 import os
-
+import sys
+import os.path
+import logging
+import threading
+import logging.config
+from optparse import OptionParser
 
 from paste.deploy.loadwsgi import NicerConfigParser
 
@@ -32,6 +34,9 @@ from paste.httpserver import server_runner as server_factory
 # Application factory and corresponding 'use=' value in config
 APP_USE_VALUE = "egg:evasion-webadmin"
 from webadmin.config.middleware import make_app as app_factory
+
+def get_log():
+    return logging.getLogger('webadmin')
 
 
 def get_config(cp, section, expected_use_value):
@@ -65,6 +70,10 @@ def get_config(cp, section, expected_use_value):
 
 def go(ini_file):
     """
+    Called to create the webapp after first connecting to the 
+    stomp broker. Once this is ready the webapp will be started
+    so it can start using messaging.
+    
     """
     ini_file = os.path.abspath(ini_file)
     if not os.path.exists(ini_file):
@@ -78,46 +87,70 @@ def go(ini_file):
     cp._defaults.setdefault("here", config_dir)
     cp._defaults.setdefault("__file__", ini_file)
     server_conf = get_config(cp, "server:main", "egg:Paste#http")
-    
-    print "server_conf: ", dir(cp)
-    
     app_conf = get_config(cp, "app:main", "egg:evasion-webadmin")
-    app = app_factory(global_conf, **app_conf)
-    serve = server_factory(app, global_conf, **server_conf)
     
-    messenger_state = cp.get("Messenger", "state", 'off')
-    if messenger_state == "on":
-        #Enable the messaging service:
-        import messenger        
+    #Enable the messaging service:
+    import messenger        
+    
+    class Runnabled(object):
+        """Provides a quick way to wait for stomp to connect 
+        and subscribe to the broker, before starting the web
+        app. This means the webapp will have signal abilites
+        when load_environment and middleware set up are called.
         
-        stomp_cfg = dict(
-            host = cp.get("Messenger", "host"),
-            port = cp.get("Messenger", "port"),
-            username = cp.get("Messenger", "username"),
-            password = cp.get("Messenger", "password"),
-            channel = cp.get("Messenger", "channel"),
-        )
-        
-        #Set up the messenger stomp protocol and run with the appmain:
-        messenger.stompprotocol.setup(stomp_cfg)
-        
-        # Run the webapp in its own thread, with the mainloop for twisted.
-        def mymain(isExit):
-            serve(app)
+        """
+        def __init__(self):
+            self.ready = threading.Event()
             
-        messenger.run(mymain)
-        
+        def connectedOk(self):
+            self.ready.set()
+            
+        def goapp(self, isExit):
+            get_log().info("go: Waiting for broker connection.")
+            self.ready.wait()
+            get_log().info("go: Connection ready, finish web app startup.")
+            app = app_factory(global_conf, **app_conf)
+            serve = server_factory(app, global_conf, **server_conf)
+            get_log().info("go: Serving webapp")
+            serve(app)   # Serves forever until ctrl-C pressed.
+
+    r = Runnabled()
+
+    stomp_cfg = dict(
+        host = cp.get("Messenger", "host"),
+        port = int(cp.get("Messenger", "port")),
+        username = cp.get("Messenger", "username"),
+        password = cp.get("Messenger", "password"),
+        channel = cp.get("Messenger", "channel"),
+    )
     
-    else:    
-        serve(app)   # Serves forever until ctrl-C pressed.
+    #Set up the messenger stomp protocol and run with the appmain:
+    messenger.stompprotocol.setup(stomp_cfg, connectedOkHandler=r.connectedOk)
+    
+    # The goapp will be running inside its own thread, with 
+    # the mainloop reserved for twisted.
+    messenger.run(r.goapp)
+
+
 
 def main():
-    parser = optparse.OptionParser(usage="%prog   development.ini")
-    opts, args = parser.parse_args()
-    if len(args) != 1:
-        parser.error("wrong number of command-line arguments")
+    log = logging.getLogger("")
+    parser = OptionParser()
+                      
+    parser.add_option("--config", action="store", dest="config_filename", 
+                    default="development.ini",
+                    help="This webadmin configuration file used at run time."
+                    )
+                      
     
-    go(args[0])
+    (options, args) = parser.parse_args()
+
+    if not os.path.isfile(options.config_filename):
+        sys.stderr.write("The config file name '%s' wasn't found!\n" % options.config_filename)
+        sys.exit(1)
+        
+    go(options.config_filename)
+
 
 if __name__ == "__main__":
     main()
