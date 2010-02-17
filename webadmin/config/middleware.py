@@ -38,10 +38,10 @@ class WebAdminApp(PylonsApp):
         """
         controller_paths = config['pylons.paths']['controllers']
         
-        get_log().debug("find_controller: looking for '%s' in paths '%s'." % (
-            controller, 
-            controller_paths
-        ))
+        #get_log().debug("find_controller: looking for '%s' in paths '%s'." % (
+        #    controller, 
+        #    controller_paths
+        #))
         
         # This is mostly a copy of the Pylons version we're overriding.
         # The only difference is that all controllers must be in the 

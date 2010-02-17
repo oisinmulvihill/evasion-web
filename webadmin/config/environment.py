@@ -66,8 +66,6 @@ def load_environment(global_conf, app_conf):
             except:
                 get_log().exception("load_environment: module '%s' configuration error - " % module['webadmin'])
 
-    # Store the modules for later use:
-    config['webadmin.modules'] = modules
                 
     # Save the routes mapping:
     config['routes.map'] = map
@@ -83,7 +81,10 @@ def load_environment(global_conf, app_conf):
     config.init_app(global_conf, app_conf, package='webadmin', paths=paths)
 
     config['routes.map'] = map
-    config['pylons.app_globals'] = app_globals.Globals()
+    # Store the modules for later use:
+    g = app_globals.Globals()
+    g.modules = modules
+    config['pylons.app_globals'] = g
     config['pylons.h'] = webadmin.lib.helpers
 
     # Create the Mako TemplateLookup, with the default auto-escaping
