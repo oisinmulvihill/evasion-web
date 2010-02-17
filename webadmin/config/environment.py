@@ -70,6 +70,9 @@ def load_environment(global_conf, app_conf):
             except:
                 get_log().exception("load_environment: module '%s' configuration error - " % module['webadmin'])
 
+    # Store the modules for later use:
+    config['webadmin.modules'] = modules
+                
     # Save the routes mapping:
     config['routes.map'] = map
     
