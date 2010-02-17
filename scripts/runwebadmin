@@ -92,29 +92,14 @@ def go(ini_file):
     #Enable the messaging service:
     import messenger        
     
-    class Runnabled(object):
-        """Provides a quick way to wait for stomp to connect 
-        and subscribe to the broker, before starting the web
-        app. This means the webapp will have signal abilites
-        when load_environment and middleware set up are called.
-        
-        """
-        def __init__(self):
-            self.ready = threading.Event()
-            
-        def connectedOk(self):
-            self.ready.set()
-            
-        def goapp(self, isExit):
-            get_log().info("go: Waiting for broker connection.")
-            self.ready.wait()
-            get_log().info("go: Connection ready, finish web app startup.")
+    class R(messenger.Runnable):
+        def ready(self):
             app = app_factory(global_conf, **app_conf)
             serve = server_factory(app, global_conf, **server_conf)
             get_log().info("go: Serving webapp")
-            serve(app)   # Serves forever until ctrl-C pressed.
+            serve(app)   # Serves forever.
 
-    r = Runnabled()
+    r = R()
 
     stomp_cfg = dict(
         host = cp.get("Messenger", "host"),
@@ -129,7 +114,7 @@ def go(ini_file):
     
     # The goapp will be running inside its own thread, with 
     # the mainloop reserved for twisted.
-    messenger.run(r.goapp)
+    messenger.run(r.run)
 
 
 
