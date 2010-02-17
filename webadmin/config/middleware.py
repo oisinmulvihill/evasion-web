@@ -56,11 +56,28 @@ class WebAdminApp(PylonsApp):
         # Hide the traceback here if the import fails (bad syntax and such)
         __traceback_hide__ = 'before_and_this'
         
-        __import__(full_module_name)
+        importmod = full_module_name
+        fromlist = full_module_name.split('.')
+        # absolute imports only (level=0):
+        get_log().debug("find_controller: import<%s> fromlist<%s>" % (importmod, fromlist))
+        try:
+            m = __import__(importmod, fromlist=fromlist, level=0)
+            
+        except:
+            get_log().exception("find_controller: import<%s> fromlist<%s> Error - " % (importmod, fromlist))
+            raise
+            
+        else:
+            get_log().debug("find_controller: imported '%s' from '%s'." % (
+                m, 
+                full_module_name
+            ))
         
         if hasattr(sys.modules[full_module_name], '__controller__'):
-            mycontroller = getattr(sys.modules[full_module_name],
-                sys.modules[full_module_name].__controller__)
+            mycontroller = getattr(
+                sys.modules[full_module_name],
+                sys.modules[full_module_name].__controller__
+            )
                 
         else:
             module_name = controller.split('.')[-1]

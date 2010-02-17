@@ -22,30 +22,24 @@ def load_environment(global_conf, app_conf):
     """
     # Pylons paths
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
-    controller_list = [
-        os.path.join(root, 'controllers'),
+    controller_list = []
+    template_list = []
+    static_dir_list = []
+
+    # Add the base module:
+    modules = [
+        dict(name='webadmin',type='root',webadmin='webadmin')
     ]
-    get_log().debug("load_environment: controller search dirs %s " % controller_list)
-    
-    template_list = [
-        os.path.join(root, 'templates'), 
-    ]
-    get_log().debug("load_environment: template search dirs %s " % template_list)
-    
-    static_dir_list = [
-        os.path.join(root, 'public'),
-    ]
-    get_log().debug("load_environment: static search dirs %s " % static_dir_list)
 
     # Create the base routing
     map = make_map()
-    
+
     # Check if the director is present then ask for webadmin modules:
     from director.signals import SignalsSender
     director = SignalsSender()
     director.ping()
-    modules = director.webadminModules()
+    modules.extend(director.webadminModules())
+    
     get_log().info("load_environment: director webadmin modules '%s'." % modules)
     
     # Attempt to load and set up the webadmin modules the director
@@ -55,7 +49,11 @@ def load_environment(global_conf, app_conf):
     for module in modules:
         try:
             get_log().info("load_environment: loading module '%s'." % module['webadmin'])
-            m = __import__(module['webadmin'])
+            importmod = module['webadmin']
+            fromlist = module['webadmin'].split('.')
+            # absolute imports only (level=0):
+            #get_log().debug("load_environment: import<%s> fromlist<%s>" % (importmod, fromlist))
+            m = __import__(importmod, fromlist=fromlist, level=0)
             
         except ImportError, e:
             get_log().error("load_environment: unable to load module '%s'." % module['webadmin'])
@@ -81,7 +79,6 @@ def load_environment(global_conf, app_conf):
         static_files=static_dir_list,
         templates=template_list ,
     )
-    get_log().debug("load_environment: webadmin final paths:\n\n%s\n" % pprint.pformat(rdict))
 
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='webadmin', paths=paths)
