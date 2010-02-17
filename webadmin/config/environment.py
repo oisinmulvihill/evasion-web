@@ -25,11 +25,7 @@ def load_environment(global_conf, app_conf):
     controller_list = []
     template_list = []
     static_dir_list = []
-
-    # Add the base module:
-    modules = [
-        dict(name='webadmin',type='root',webadmin='webadmin')
-    ]
+    modules = []
 
     # Create the base routing
     map = make_map()
