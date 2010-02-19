@@ -20,6 +20,7 @@ setup(
         "repoze.what.plugins.ini>=0.2.2",
         "repoze.who-friendlyform>=1.0b2",
         "fcrypt",
+        "tailer",
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),

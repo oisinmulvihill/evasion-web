@@ -1,5 +1,4 @@
-data
-evasion_webadmin.egg-info/SOURCES.txt
+evasion_webadmin.egg-info/*
 evasion_webadmin.egg-info
 temp/
 *.log
