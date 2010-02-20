@@ -1,4 +1,4 @@
-build*
+data
 evasion_webadmin.egg-info/*
 evasion_webadmin.egg-info
 temp/

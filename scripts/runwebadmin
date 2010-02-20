@@ -110,12 +110,20 @@ def go(ini_file):
     )
     
     #Set up the messenger stomp protocol and run with the appmain:
-    messenger.stompprotocol.setup(stomp_cfg, connectedOkHandler=r.connectedOk)
+    #messenger.stompprotocol.setup(stomp_cfg, connectedOkHandler=r.connectedOk)
     
     # The goapp will be running inside its own thread, with 
     # the mainloop reserved for twisted.
-    messenger.run(r.run)
+    #messenger.run(r.run)
 
+    def appmain(isExit):
+        app = app_factory(global_conf, **app_conf)
+        serve = server_factory(app, global_conf, **server_conf)
+        get_log().info("go: Serving webapp")
+        serve(app)   # Serves forever.
+
+    messenger.stompprotocol.setup(stomp_cfg)
+    messenger.run(appmain)
 
 
 def main():

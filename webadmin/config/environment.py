@@ -30,29 +30,35 @@ def load_environment(global_conf, app_conf):
     # Create the base routing
     map = make_map()
 
-    # Check if the director is present then ask for webadmin modules:
-    from director.signals import SignalsSender
-    director = SignalsSender()
-    director.ping()
-    modules.extend(director.webadminModules())
-    
+    # Load the webadmin modules we are using into the webapp.
+    # Under the [app:main] section should be like
+    # webadmin_modules = something, something else, etc
+    # A safe default is:
+    #
+    # webadmin_modules = webadmin 
+    #
+    # If nothing is found in the configuration then the default 
+    # 'webadmin' interface will be used.
+    #
+    modules = app_conf.get('webadmin_modules', 'webadmin')
+    modules = [m for m in modules.split(',') if m]
     get_log().info("load_environment: director webadmin modules '%s'." % modules)
     
-    # Attempt to load and set up the webadmin modules the director
-    # has returned. These modules need to be in the path that the
-    # evasion-webadmin looks in for python imports.
+    # Attempt to load and set up the webadmin modules listed in 
+    # the config file. These modules need to be in the path that 
+    # the evasion-webadmin looks in for python imports.
     #
     for module in modules:
         try:
-            get_log().info("load_environment: loading module '%s'." % module['webadmin'])
-            importmod = module['webadmin']
-            fromlist = module['webadmin'].split('.')
+            get_log().info("load_environment: loading module '%s'." % module)
+            importmod = module
+            fromlist = module.split('.')
             # absolute imports only (level=0):
             #get_log().debug("load_environment: import<%s> fromlist<%s>" % (importmod, fromlist))
             m = __import__(importmod, fromlist=fromlist, level=0)
             
         except ImportError, e:
-            get_log().error("load_environment: unable to load module '%s'." % module['webadmin'])
+            get_log().error("load_environment: unable to load module '%s'." % module)
             
         else:
             try:
@@ -64,7 +70,7 @@ def load_environment(global_conf, app_conf):
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
 
             except:
-                get_log().exception("load_environment: module '%s' configuration error - " % module['webadmin'])
+                get_log().exception("load_environment: module '%s' configuration error - " % module)
 
                 
     # Save the routes mapping:
