@@ -29,6 +29,9 @@ def load_environment(global_conf, app_conf):
 
     # Create the base routing
     map = make_map()
+    
+    # Create globals modules can add sections to:
+    g = app_globals.Globals()
 
     # Load the webadmin modules we are using into the webapp.
     # Under the [app:main] section should be like
@@ -67,6 +70,7 @@ def load_environment(global_conf, app_conf):
                 static_dir_list.append(rdict['static'])
                 template_list.append(rdict['templates'])
                 map = rdict['map']
+                g.__dict__[module] = rdict['g']
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
 
             except:
@@ -86,11 +90,15 @@ def load_environment(global_conf, app_conf):
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='webadmin', paths=paths)
 
+    # Store the site wide routes map:
     config['routes.map'] = map
+    
     # Store the modules for later use:
-    g = app_globals.Globals()
     g.modules = modules
+    
+    # Store the site wide globals:
     config['pylons.app_globals'] = g
+    
     config['pylons.h'] = webadmin.lib.helpers
 
     # Create the Mako TemplateLookup, with the default auto-escaping
