@@ -138,8 +138,8 @@ class PlainAuthenticatorMetadataProvider(object):
         """
         returned = None
         
-        login = identity['login']
-        password = identity['password']
+        login = identity.get('login')
+        password = identity.get('password')
                     
         # Recover the password and check the given one against it:
         user = self.userDetails.get(login)
