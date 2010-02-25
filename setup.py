@@ -73,7 +73,7 @@ setup(
     scripts=ProjectScripts,
     install_requires=needed,
     include_package_data=True,
-    packages=find_packages(),#'webadmin', exclude=['ez_setup']),
+    packages=find_packages(),
     package_data=PackageData,
     eager_resources = EagerResources,
     setup_requires=["PasteScript>=1.6.3"],
