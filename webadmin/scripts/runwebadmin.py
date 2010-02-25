@@ -24,11 +24,12 @@ import threading
 import logging.config
 from optparse import OptionParser
 
+from paste.httpserver import serve
+from paste.httpserver import server_runner
 from paste.deploy.loadwsgi import NicerConfigParser
 
 # Server class and corresponding 'use=' value in config
 SERVER_USE_VALUE = "egg:Paste#http"
-from paste.httpserver import server_runner as server_factory
 
 
 # Application factory and corresponding 'use=' value in config
@@ -41,7 +42,7 @@ def get_log():
 
 class Run(object):    
     
-    def __init__(self, ini_file):
+    def __init__(self, ini_file=None):
         """
         Set up the configuration ready for main and appmain to use.
         
@@ -73,6 +74,13 @@ class Run(object):
         self.cp._defaults.setdefault("__file__", self.iniFile)
         self.serverConf = self.getConfig(self.cp, "server:main", "egg:Paste#http")
         self.appConf = self.getConfig(self.cp, "app:main", "egg:evasion-webadmin")
+        
+        # Only set up if running as part of the director under the webadminctrl 
+        # controller. This runs the webadmin as a thread instead of a separate
+        # process.
+        #
+        self.directorIntegrationServer = None
+        self.directorIntegrationIsRunning = False
 
 
     def getConfig(self, cp, section, expected_use_value):
@@ -104,24 +112,81 @@ class Run(object):
         return ret
 
 
+    def appmainSetup(self):
+        """
+        Called to create the wsgi app ready for appmain or 
+        directorIntegration to use.
+        
+        """
+        app = app_factory(self.globalConf, **self.appConf)
+        return app
+        
+
     def appmain(self, isExit):    
         """
         Called to run inside its own thread once twisted has taken over 
         the main loop.
         
         """
-        app = app_factory(self.globalConf, **self.appConf)
-        serve = server_factory(app, self.globalConf, **self.serverConf)
+        app = self.appmainSetup()
         self.log.info("appmain: Serving webapp")
-        serve(app)
-    
+        server_runner(app, self.globalConf, **self.serverConf)
 
-    def main(self):
+
+    def directorIntegrationStart(self):
         """
-        Called to run twisted in the mainloop so messaging will work correctly. 
-        The webapp will be run via appmain.
+        Create a server which the director webadminctrl controller
+        will use to run the webapp, when start is called. The 
+        controller will also be able to stop the webapp via shutdown.
         
         """
+        self.setUpStomp()
+        
+        self.log.info("directorIntegrationStart: creating wsgi_app")
+        wsgi_app = self.appmainSetup()
+        
+        # Use threadpool to also get access to server_close()
+        self.serverConf['use_threadpool'] = True
+        
+        # Don't start serving straigh away, return so I can
+        # store the server handle to close it later.
+        self.serverConf['start_loop'] = False
+        
+        self.log.info("directorIntegrationStart: creating server.")
+        self.directorIntegrationServer = serve(wsgi_app, **self.serverConf)
+        
+        try:
+            self.directorIntegrationIsRunning = True
+            self.log.info("directorIntegrationStart: serving until stopped.")
+            self.directorIntegrationServer.serve_forever()
+            
+        except KeyboardInterrupt:
+            # allow CTRL+C to shutdown
+            self.log.warn("directorIntegrationStart: KeyboardInterrupt! Stopping... ")
+            
+        except:
+            self.log.exception("directorIntegrationStart Error - ")
+            
+        self.directorIntegrationIsRunning = False
+        self.log.info("directorIntegrationStart: server stopped.")
+
+
+    def directorIntegrationIsStarted(self):
+        return self.directorIntegrationIsRunning
+ 
+
+    def directorIntegrationStop(self):
+        """Stop the server handling any more requests."""
+        if not self.directorIntegrationServer:
+            self.log.error("directorIntegrationStop: directorIntegrationStart not called to set up server!")
+        else:
+            self.log.info("directorIntegrationStop: telling server to close.")
+            self.directorIntegrationServer.server_close()
+            self.log.info("directorIntegrationStop: server close called ok.")
+
+
+    def setUpStomp(self):
+        """Connect to the broker so we can send/receive messages."""
         import messenger        
 
         stomp_cfg = dict(
@@ -134,6 +199,17 @@ class Run(object):
         
         self.log.info("appmain: setting up stomp connection")
         messenger.stompprotocol.setup(stomp_cfg)
+
+
+    def main(self):
+        """
+        Called to run twisted in the mainloop so messaging will work correctly. 
+        The webapp will be run via appmain.
+        
+        """
+        import messenger        
+        
+        self.setUpStomp()
         
         self.log.info("appmain: running mainloop until done.")
         messenger.run(self.appmain)
