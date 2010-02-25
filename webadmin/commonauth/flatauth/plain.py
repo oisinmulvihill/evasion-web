@@ -101,6 +101,10 @@ class PlainAuthenticatorMetadataProvider(object):
         
         s = StringIO.StringIO(user_details)
         reader = csv.DictReader(s, fieldnames=self.FIELDNAMES)
+        
+        # Skip headers or it will get added as a user!!
+        reader.next()
+        
         try:
             for row in reader:
                 # No check for duplicate usernames is done! The
@@ -120,7 +124,7 @@ class PlainAuthenticatorMetadataProvider(object):
                     email=email,
                     name=name,
                 )
-                
+
         except csv.Error, e:
             raise ValueError('Error on line %d: %s' % (filename, reader.line_num, e))
 
@@ -140,11 +144,25 @@ class PlainAuthenticatorMetadataProvider(object):
         
         login = identity.get('login')
         password = identity.get('password')
-                    
+    
         # Recover the password and check the given one against it:
         user = self.userDetails.get(login)
+
+        get_log().warn("""authenticate
+        
+        identity:
+        %s
+        
+        login:
+        %s
+        
+        user:
+        %s
+        
+        """ % (identity, login, user))
+        
         if user:
-            #print "user '%s' hpw '%s'" % (user,user['password'])
+            get_log().debug("user '%s' hpw '%s'" % (user,user['password']))
             if password_check(password, user['password']):
                 returned = user['username']
 
@@ -161,7 +179,22 @@ class PlainAuthenticatorMetadataProvider(object):
         
         """
         userid = identity.get('repoze.who.userid')
+        
         info = self.userDetails.get(userid)
+
+        get_log().warn("""add_metadata
+        
+        identity:
+        %s
+        
+        userid:
+        %s
+        
+        info
+        %s
+        
+        """ % (identity, userid, info))
+        
         if info is not None:
             identity.update(info)
 
