@@ -150,9 +150,8 @@ class PlainAuthenticatorMetadataProvider(object):
     
         # Recover the password and check the given one against it:
         user = self.userDetails.get(login)
-
+        
         if user:
-            get_log().debug("user '%s' hpw '%s'" % (user,user['password']))
             if password_check(password, user['password']):
                 returned = user['username']
 
