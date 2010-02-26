@@ -143,24 +143,14 @@ class PlainAuthenticatorMetadataProvider(object):
         returned = None
         
         login = identity.get('login')
+        if not login:
+            identity.get('repoze.who.plugins.auth_tkt.userid')
+            
         password = identity.get('password')
     
         # Recover the password and check the given one against it:
         user = self.userDetails.get(login)
 
-        get_log().warn("""authenticate
-        
-        identity:
-        %s
-        
-        login:
-        %s
-        
-        user:
-        %s
-        
-        """ % (identity, login, user))
-        
         if user:
             get_log().debug("user '%s' hpw '%s'" % (user,user['password']))
             if password_check(password, user['password']):
@@ -179,21 +169,10 @@ class PlainAuthenticatorMetadataProvider(object):
         
         """
         userid = identity.get('repoze.who.userid')
+        if not userid:
+            identity.get('repoze.who.plugins.auth_tkt.userid')
         
         info = self.userDetails.get(userid)
-
-        get_log().warn("""add_metadata
-        
-        identity:
-        %s
-        
-        userid:
-        %s
-        
-        info
-        %s
-        
-        """ % (identity, userid, info))
         
         if info is not None:
             identity.update(info)
