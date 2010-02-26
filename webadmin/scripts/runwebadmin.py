@@ -15,6 +15,7 @@ different than what it intends to load.
 
 Make sure you've installed the application, Pylons, and any other dependencies
 before running this.
+
 """
 import os
 import sys
@@ -42,7 +43,7 @@ def get_log():
 
 class Run(object):    
     
-    def __init__(self, ini_file=None):
+    def __init__(self, ini_file=None, nologsetup=False):
         """
         Set up the configuration ready for main and appmain to use.
         
@@ -61,7 +62,8 @@ class Run(object):
             
         config_dir = os.path.dirname(__file__)
         self.iniFile = os.path.join(config_dir, 'development.ini')
-        logging.config.fileConfig(self.iniFile)
+        if not nologsetup:
+            logging.config.fileConfig(self.iniFile)
         
         self.log.debug("init: config dir:'%s'" % config_dir)
         self.log.debug("init: self.iniFile:'%s'" % self.iniFile)
