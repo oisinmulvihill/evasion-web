@@ -27,7 +27,7 @@ ShortDescription=Summary
 Description=Summary
 
 needed = [
-        "Pylons>=0.9.7",
+        "Pylons==0.9.7",
         "repoze.tm2 >= 1.0a4", 
         "repoze.who == 1.0.18",
         "repoze.what",
