@@ -53,15 +53,16 @@ class Run(object):
         
         """
         self.log = logging.getLogger('webadmin.scripts.runwebadmin.Run')
+        config_dir = os.path.dirname(__file__)
 
-        # If nothing was given for the config file use our internal version.
         if not ini_file:
-            self.iniFile = os.path.abspath(__file__)
+            # If nothing was given for the config file use our internal version.
+            self.iniFile = os.path.join(config_dir, 'development.ini')
+            self.log = logging.getLogger("init: using internal ini file '%s'." % self.iniFile)
+            
         else:
             self.iniFile = os.path.abspath(ini_file)
             
-        config_dir = os.path.dirname(__file__)
-        self.iniFile = os.path.join(config_dir, 'development.ini')
         if not nologsetup:
             logging.config.fileConfig(self.iniFile)
         
@@ -247,7 +248,10 @@ def main():
         sys.stderr.write("The config file name '%s' wasn't found!\n" % options.config_filename)
         sys.exit(1)
         
-    r = Run(options.config_filename)
+    else:
+        print "options.config_filename: ", options.config_filename
+        
+    r = Run(ini_file=options.config_filename)
     r.main()
 
 

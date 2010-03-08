@@ -28,13 +28,17 @@ def configure(map):
     map.connect('root', '/', controller=base % 'root', action='index')
     map.connect('login', '/login', controller=base % 'root', action='login')
     
-#    map.connect('/{controller}/{action}')
-#    map.connect('/{controller}/{action}/{id}')
-
+    class Obj:
+        def __init__(self):
+            pass
+    g = Obj()
+    
     return dict(
         controllers = controllers_dir,
         static = static_dir,
         templates = templates_dir,
         map = map,
+        g = g,
     )
+
     

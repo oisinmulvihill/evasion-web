@@ -12,16 +12,10 @@
 
 ## Body 
 <div id="content">
-    % if not c.modules:
-        <h2>No modules to load</h2>
-        <div>
-            <em>None set in the director configuration?</em>
-        </div>
-    % endif
-    
-    % for m in c.modules:
-        Module: ${ str(m) }
-    % endfor
+    <h2>Default Webadmin</h2>
+    <div>
+        <em>Did you set webadmin_modules in your configuration?</em>
+    </div>
 </div>
 
 <%def name="foot()">
