@@ -28,6 +28,8 @@ Description=Summary
 
 needed = [
         "Pylons==0.9.7",
+        "Paste",        
+        "PasteScript",        
         "repoze.tm2 >= 1.0a4", 
         "repoze.who == 1.0.18",
         "repoze.what",
@@ -36,8 +38,8 @@ needed = [
         "repoze.who-friendlyform>=1.0b2",
         "fcrypt",
         "tailer",
-        "evasion-messenger",
-        "evasion-director",
+#        "evasion-messenger",
+#        "evasion-director",
 ]
 
 

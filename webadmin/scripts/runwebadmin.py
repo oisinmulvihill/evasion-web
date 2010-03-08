@@ -76,6 +76,15 @@ class Run(object):
         self.cp._defaults.setdefault("__file__", self.iniFile)
         self.serverConf = self.getConfig(self.cp, "server:main", "egg:Paste#http")
         self.appConf = self.getConfig(self.cp, "app:main", "egg:evasion-webadmin")
+        m = dict(
+            state= self.cp.get('Messenger', 'state', 'off'),
+            host = self.cp.get('Messenger', 'host', '127.0.0.1'),
+            port = self.cp.get('Messenger', 'port', 61613),
+            username = self.cp.get('Messenger', 'username', ''),
+            password = self.cp.get('Messenger', 'password', ''),
+            channel = self.cp.get('Messenger', 'channel', 'evasion'),
+        )
+        self.messengerConf = m
         
         # Only set up if running as part of the director under the webadminctrl 
         # controller. This runs the webadmin as a thread instead of a separate
@@ -209,14 +218,18 @@ class Run(object):
         The webapp will be run via appmain.
         
         """
-        import messenger        
+        if self.messengerConf['state'] == 'on':
+            import messenger        
+            self.setUpStomp()
         
-        self.setUpStomp()
+            self.log.info("main: running mainloop until done.")
+            messenger.run(self.appmain)
+            self.log.info("main: Exiting.")
         
-        self.log.info("appmain: running mainloop until done.")
-        messenger.run(self.appmain)
-        
-        self.log.info("appmain: Exiting.")
+        else:
+            self.log.info("main: running mainloop (no messenger).")
+            self.appmain(None)
+            self.log.info("main: Exiting.")
 
 
 def main():
