@@ -16,21 +16,76 @@ def get_log():
     return logging.getLogger('webadmin.config.environment')
 
 
+def default_middleware(app, global_conf, app_conf, middleware_list):
+    """
+    Add the default pylons Routing/Session/Cache Middleware.
+    """
+    from routes.middleware import RoutesMiddleware
+    from beaker.middleware import CacheMiddleware, SessionMiddleware
+    
+    app = RoutesMiddleware(app, config['routes.map'])
+    app = SessionMiddleware(app, config)
+    app = CacheMiddleware(app, config)
+    
+    return app
+
+
+def default_auth(app, global_conf, app_conf, middleware_list):
+    """
+    Add the default evasion file based authentification.
+    """
+    from webadmin.config.repozewhomid import add_auth
+    
+    # Set up the repoze.who auth:
+    #
+    sitename = app_conf.get('sitename','')
+    sessionname = app_conf.get('beaker.session.key')
+    sessionsecret = app_conf.get('beaker.session.secret')
+    groupfile = app_conf.get('groupfile','')
+    passwordfile = app_conf.get('passwordfile','')
+    permissionfile = app_conf.get('permissionfile','')
+
+    app = add_auth(
+        app,
+        sitename,
+        sessionname,
+        sessionsecret,
+        passwordfile,
+        groupfile,
+        permissionfile
+    )
+    
+    return app
+
+
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
     object
+
+    :returns: return set up recovered which will be used
+    used in websetup.py or middleware.py
+    
+        dict(
+            loaded_modules = [ ... ],
+            middleware_list = [ ..functions like default_middleware or default_auth.. ],
+        )
+
     """
     # Pylons paths
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     controller_list = []
     template_list = []
     static_dir_list = []
-    modules = []
-
+    loaded_modules = []
+    middleware_list = [
+        default_middleware, 
+        default_auth,
+    ]
+    
     # Create the base routing
     map = make_map()
     
-    # Create globals modules can add sections to:
+    # Create globals loaded_modules can add sections to:
     g = app_globals.Globals()
 
     # Load the webadmin modules we are using into the webapp.
@@ -43,15 +98,15 @@ def load_environment(global_conf, app_conf):
     # If nothing is found in the configuration then the default 
     # 'webadmin' interface will be used.
     #
-    modules = app_conf.get('webadmin_modules', 'webadmin')
-    modules = [m for m in modules.split(',') if m]
-    get_log().info("load_environment: director webadmin modules '%s'." % modules)
+    loaded_modules = app_conf.get('webadmin_modules', 'webadmin')
+    loaded_modules = [m for m in loaded_modules.split(',') if m]
+    get_log().info("load_environment: director webadmin modules '%s'." % loaded_modules)
     
     # Attempt to load and set up the webadmin modules listed in 
     # the config file. These modules need to be in the path that 
     # the evasion-webadmin looks in for python imports.
     #
-    for module in modules:
+    for module in loaded_modules:
         try:
             get_log().info("load_environment: loading module '%s'." % module)
             importmod = module
@@ -65,17 +120,18 @@ def load_environment(global_conf, app_conf):
             
         else:
             try:
-                rdict = m.configure(map)
+                rdict = m.configure(map, global_conf, app_conf)
                 controller_list.append(rdict['controllers'])
                 static_dir_list.append(rdict['static'])
                 template_list.append(rdict['templates'])
                 map = rdict['map']
+                if rdict['middleware']:
+                    middleware_list.append(rdict['middleware'])
                 g.__dict__[module] = rdict['g']
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
 
             except:
                 get_log().exception("load_environment: module '%s' configuration error - " % module)
-
                 
     # Save the routes mapping:
     config['routes.map'] = map
@@ -94,7 +150,7 @@ def load_environment(global_conf, app_conf):
     config['routes.map'] = map
     
     # Store the modules for later use:
-    g.modules = modules
+    g.modules = loaded_modules
     
     # Store the site wide globals:
     config['pylons.app_globals'] = g
@@ -109,5 +165,13 @@ def load_environment(global_conf, app_conf):
         input_encoding='utf-8', default_filters=['escape'],
         imports=['from webhelpers.html import escape'])
 
-    # CONFIGURATION OPTIONS HERE (note: all config options will override
-    # any Pylons config options)
+        
+    # Used in middleware.py / websetup function:
+    #
+    return dict(
+        loaded_modules = loaded_modules,
+        middleware_list = middleware_list,
+    )
+
+
+

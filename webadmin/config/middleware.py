@@ -3,7 +3,6 @@
 import sys
 import logging
 
-from beaker.middleware import CacheMiddleware, SessionMiddleware
 from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
@@ -11,10 +10,8 @@ from paste.deploy.converters import asbool
 from pylons import config
 from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
-from routes.middleware import RoutesMiddleware
 from pylons.util import class_name_from_module_name
 
-from webadmin.config.repozewhomid import add_auth
 from webadmin.config.environment import load_environment
 
 
@@ -119,36 +116,20 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     """
     # Configure the Pylons environment
-    load_environment(global_conf, app_conf)
+    set_up = load_environment(global_conf, app_conf)
+    middleware_list = set_up['middleware_list']
 
     # The Pylons WSGI app
     app = WebAdminApp()
 
-    # Routing/Session/Cache Middleware
-    app = RoutesMiddleware(app, config['routes.map'])
-    app = SessionMiddleware(app, config)
-    app = CacheMiddleware(app, config)
-
-    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-
-    # Set up the repoze.who auth:
+    # Set up the middleware based on the list of provided middleware functions:
     #
-    sitename = app_conf.get('sitename','')
-    sessionname = app_conf.get('beaker.session.key')
-    sessionsecret = app_conf.get('beaker.session.secret')
-    groupfile = app_conf.get('groupfile','')
-    passwordfile = app_conf.get('passwordfile','')
-    permissionfile = app_conf.get('permissionfile','')
-
-    app = add_auth(
-        app,
-        sitename,
-        sessionname,
-        sessionsecret,
-        passwordfile,
-        groupfile,
-        permissionfile
-    )
+    for middleware in middleware_list:
+        try:
+            app = middleware(app, global_conf, app_conf, middleware_list)
+            
+        except:
+            get_log().exception("Error configuring middleware '%s' - " % middleware)
 
     if asbool(full_stack):
         # Handle Python exceptions
@@ -173,3 +154,6 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
 
     return app
+
+
+

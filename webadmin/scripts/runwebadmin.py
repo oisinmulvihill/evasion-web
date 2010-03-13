@@ -37,8 +37,9 @@ SERVER_USE_VALUE = "egg:Paste#http"
 APP_USE_VALUE = "egg:evasion-webadmin"
 from webadmin.config.middleware import make_app as app_factory
 
+
 def get_log():
-    return logging.getLogger('webadmin')
+    return logging.getLogger('evasion.web.scripts.runweb')
 
 
 class Run(object):    
@@ -94,6 +95,23 @@ class Run(object):
         self.directorIntegrationServer = None
         self.directorIntegrationIsRunning = False
 
+
+    def setupapp(self):
+        """
+        Run the equivalent paster setup-app
+        
+        """
+        from webadmin import websetup
+        
+        class O:
+            global_conf = self.globalConf
+            local_conf = self.appConf
+        
+        command='?' # not sure what to do here
+        conf = O()
+        
+        websetup.setup_app(command, conf, vars)
+        
 
     def getConfig(self, cp, section, expected_use_value):
         """Get a section from an INI-style config file as a dict.
@@ -241,6 +259,11 @@ def main():
                     help="This webadmin configuration file used at run time."
                     )
                       
+    parser.add_option("--setup-app", action="store_true", dest="setupapp", 
+                    default=False,
+                    help="This does a paster setup-app with the --config option."
+                    )
+                      
     
     (options, args) = parser.parse_args()
 
@@ -250,9 +273,16 @@ def main():
         
     else:
         print "options.config_filename: ", options.config_filename
-        
+
     r = Run(ini_file=options.config_filename)
-    r.main()
+    
+    if options.setupapp:
+        print("Running setup-app.")
+        r.setupapp()
+        
+    else:
+        print("Running webapp.")
+        r.main()
 
 
 

@@ -34,8 +34,6 @@ class ErrorController(BaseController):
                  code=cgi.escape(request.GET.get('code', str(resp.status_int))),
                  message=content)
                  
-        get_log().error("ErrorController: '%s' - '%s'." % (resp.status_int, content))
-                 
         return page
 
     def img(self, id):
