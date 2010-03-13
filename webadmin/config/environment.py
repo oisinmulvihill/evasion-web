@@ -58,7 +58,7 @@ def default_auth(app, global_conf, app_conf, middleware_list):
     return app
 
 
-def load_environment(global_conf, app_conf):
+def load_environment(global_conf, app_conf, websetup=False):
     """Configure the Pylons environment via the ``pylons.config``
     object
 
@@ -67,6 +67,7 @@ def load_environment(global_conf, app_conf):
     
         dict(
             loaded_modules = [ ... ],
+            setup_app_list = [ ..setup_app function list..],
             middleware_list = [ ..functions like default_middleware or default_auth.. ],
         )
 
@@ -76,6 +77,7 @@ def load_environment(global_conf, app_conf):
     controller_list = []
     template_list = []
     static_dir_list = []
+    setup_app_list = []
     loaded_modules = []
     middleware_list = [
         default_middleware, 
@@ -120,15 +122,20 @@ def load_environment(global_conf, app_conf):
             
         else:
             try:
-                rdict = m.configure(map, global_conf, app_conf)
+                rdict = m.configure(map, global_conf, app_conf, websetup)
                 controller_list.append(rdict['controllers'])
                 static_dir_list.append(rdict['static'])
                 template_list.append(rdict['templates'])
                 map = rdict['map']
                 if rdict['middleware']:
                     middleware_list.append(rdict['middleware'])
+                if rdict['setup_app']:
+                    setup_app_list.append(rdict['setup_app'])
                 g.__dict__[module] = rdict['g']
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
+
+            except SystemExit, e:
+                raise
 
             except:
                 get_log().exception("load_environment: module '%s' configuration error - " % module)
@@ -170,6 +177,7 @@ def load_environment(global_conf, app_conf):
     #
     return dict(
         loaded_modules = loaded_modules,
+        setup_app_list = setup_app_list,
         middleware_list = middleware_list,
     )
 

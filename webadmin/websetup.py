@@ -9,10 +9,26 @@ def get_log():
     
 
 def setup_app(command, conf, vars):
-    """Place any commands to setup webadmin here"""
-    load_environment(conf.global_conf, conf.local_conf)
+    """
+    Load the environment then run each modules setup_app 
+    if one was recovered.
     
-    get_log().info("Creating DB")
-    from commoncouchdb import db
-    db.create()
+    """
+    set_up = load_environment(conf.global_conf, conf.local_conf, websetup=True)
+    
+    setup_app_list = set_up['setup_app_list']
+    
+    # Call each modules setup app:
+    #
+    for setupapp in setup_app_list:
+        try:
+            get_log().debug("setup_app: calling for '%s'." % setupapp)
+            setupapp(command, conf, vars)
+
+        except SystemExit, e:
+            raise            
+
+        except:
+            get_log().exception("Error when calling '%s' - " % setupapp)
+            
     
