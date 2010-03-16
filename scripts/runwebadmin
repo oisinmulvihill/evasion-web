@@ -1,5 +1,5 @@
 #!python
-from webadmin.scripts import runwebadmin
+from evasion.web.scripts import runwebadmin
 
 if __name__ == "__main__":
     runwebadmin.main()

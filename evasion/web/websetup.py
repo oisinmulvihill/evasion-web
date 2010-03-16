@@ -1,7 +1,7 @@
-"""Setup the webadmin application"""
+"""Setup the evasion.web application"""
 import logging
 
-from webadmin.config.environment import load_environment
+from evasion.web.config.environment import load_environment
 
 
 def get_log():

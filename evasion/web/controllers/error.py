@@ -7,10 +7,10 @@ from pylons.controllers.util import forward
 from pylons.middleware import error_document_template
 from webhelpers.html.builder import literal
 
-from webadmin.lib.base import BaseController
+from evasion.web.lib.base import BaseController
 
 def get_log():
-    return logging.getLogger('webadmin.controllers.error')
+    return logging.getLogger('evasion.web.controllers.error')
     
 
 class ErrorController(BaseController):

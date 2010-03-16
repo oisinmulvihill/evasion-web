@@ -12,11 +12,11 @@ from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from pylons.util import class_name_from_module_name
 
-from webadmin.config.environment import load_environment
+from evasion.web.config.environment import load_environment
 
 
 def get_log():
-    return logging.getLogger('webadmin.config.middleware')
+    return logging.getLogger('evasion.web.config.middleware')
 
 
 class WebAdminApp(PylonsApp):

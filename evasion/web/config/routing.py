@@ -12,7 +12,7 @@ from routes.util import controller_scan
 
 
 def get_log():
-    return logging.getLogger('webadmin.config.routing')
+    return logging.getLogger('evasion.web.config.routing')
     
 
 def directory_scanner():
@@ -36,7 +36,7 @@ def directory_scanner():
 
 
 def make_map():
-    """Create the default mapper instance that the webadmin 
+    """Create the default mapper instance that the evasion.web 
     modules will then add connections to.
     """
     map = Mapper(

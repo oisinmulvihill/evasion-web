@@ -3,7 +3,7 @@ I took this from the pylons list:
    
    http://www.mail-archive.com/pylons-discuss@googlegroups.com/msg08951.html
 
-This should allow me to bbfreeze the webadmin web server - Oisin 2009-12-03.
+This should allow me to bbfreeze the evasion.web web server - Oisin 2009-12-03.
 
 
 Run the standalone on the console similar to "paster serve".
@@ -34,8 +34,8 @@ SERVER_USE_VALUE = "egg:Paste#http"
 
 
 # Application factory and corresponding 'use=' value in config
-APP_USE_VALUE = "egg:evasion-webadmin"
-from webadmin.config.middleware import make_app as app_factory
+APP_USE_VALUE = "egg:evasion-web"
+from evasion.web.config.middleware import make_app as app_factory
 
 
 def get_log():
@@ -50,10 +50,10 @@ class Run(object):
         
         :params ini_file: None or ini file used to configure the webapp 
         and logging. If this is None then the internal version will be 
-        used in the webadmin.script directory
+        used in the evasion.web.script directory
         
         """
-        self.log = logging.getLogger('webadmin.scripts.runwebadmin.Run')
+        self.log = logging.getLogger('evasion.web.scripts.runwebadmin.Run')
         config_dir = os.path.dirname(__file__)
 
         if not ini_file:
@@ -77,7 +77,7 @@ class Run(object):
         self.cp._defaults.setdefault("here", config_dir)
         self.cp._defaults.setdefault("__file__", self.iniFile)
         self.serverConf = self.getConfig(self.cp, "server:main", "egg:Paste#http")
-        self.appConf = self.getConfig(self.cp, "app:main", "egg:evasion-webadmin")
+        self.appConf = self.getConfig(self.cp, "app:main", "egg:evasion-web")
         m = dict(
             state= self.cp.get('Messenger', 'state', 'off'),
             host = self.cp.get('Messenger', 'host', '127.0.0.1'),
@@ -89,7 +89,7 @@ class Run(object):
         self.messengerConf = m
         
         # Only set up if running as part of the director under the webadminctrl 
-        # controller. This runs the webadmin as a thread instead of a separate
+        # controller. This runs the evasion.web as a thread instead of a separate
         # process.
         #
         self.directorIntegrationServer = None
@@ -101,7 +101,7 @@ class Run(object):
         Run the equivalent paster setup-app
         
         """
-        from webadmin import websetup
+        from evasion.web import websetup
         
         class O:
             global_conf = self.globalConf
@@ -256,7 +256,7 @@ def main():
                       
     parser.add_option("--config", action="store", dest="config_filename", 
                     default=None,
-                    help="This webadmin configuration file used at run time."
+                    help="This evasion.web configuration file used at run time."
                     )
                       
     parser.add_option("--setup-app", action="store_true", dest="setupapp", 

@@ -15,11 +15,11 @@ from repoze.what.plugins.ini import INIPermissionsAdapter
 from repoze.who.plugins.friendlyform import FriendlyFormPlugin
 from repoze.who.plugins.auth_tkt import AuthTktCookiePlugin
 
-from webadmin.commonauth.flatauth import plain
+from evasion.web.commonauth.flatauth import plain
 
 
 def get_log():
-    return logging.getLogger('webadmin.config.repozewhomid')
+    return logging.getLogger('evasion.web.config.repozewhomid')
 
 
 def add_auth(app, sitename, sessionname, sessionsecret, password_file, groups_file, permissions_file):

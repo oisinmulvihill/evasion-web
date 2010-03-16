@@ -7,13 +7,13 @@ from mako.lookup import TemplateLookup
 from pylons import config
 from pylons.error import handle_mako_error
 
-import webadmin.lib.app_globals as app_globals
-import webadmin.lib.helpers
-from webadmin.config.routing import make_map
+import evasion.web.lib.app_globals as app_globals
+import evasion.web.lib.helpers
+from evasion.web.config.routing import make_map
 
 
 def get_log():
-    return logging.getLogger('webadmin.config.environment')
+    return logging.getLogger('evasion.web.config.environment')
 
 
 def default_middleware(app, global_conf, app_conf, middleware_list):
@@ -34,7 +34,7 @@ def default_auth(app, global_conf, app_conf, middleware_list):
     """
     Add the default evasion file based authentification.
     """
-    from webadmin.config.repozewhomid import add_auth
+    from evasion.web.config.repozewhomid import add_auth
     
     # Set up the repoze.who auth:
     #
@@ -90,23 +90,23 @@ def load_environment(global_conf, app_conf, websetup=False):
     # Create globals loaded_modules can add sections to:
     g = app_globals.Globals()
 
-    # Load the webadmin modules we are using into the webapp.
+    # Load the evasion.web modules we are using into the webapp.
     # Under the [app:main] section should be like
     # webadmin_modules = something, something else, etc
     # A safe default is:
     #
-    # webadmin_modules = webadmin 
+    # webadmin_modules = evasion.web 
     #
     # If nothing is found in the configuration then the default 
-    # 'webadmin' interface will be used.
+    # 'evasion.web' interface will be used.
     #
-    loaded_modules = app_conf.get('webadmin_modules', 'webadmin')
+    loaded_modules = app_conf.get('webadmin_modules', 'evasion.web')
     loaded_modules = [m for m in loaded_modules.split(',') if m]
-    get_log().info("load_environment: director webadmin modules '%s'." % loaded_modules)
+    get_log().info("load_environment: director evasion.web modules '%s'." % loaded_modules)
     
-    # Attempt to load and set up the webadmin modules listed in 
+    # Attempt to load and set up the evasion.web modules listed in 
     # the config file. These modules need to be in the path that 
-    # the evasion-webadmin looks in for python imports.
+    # the evasion-evasion.web looks in for python imports.
     #
     for module in loaded_modules:
         try:
@@ -151,7 +151,7 @@ def load_environment(global_conf, app_conf, websetup=False):
     )
 
     # Initialize config with the basic options
-    config.init_app(global_conf, app_conf, package='webadmin', paths=paths)
+    config.init_app(global_conf, app_conf, package='evasion.web', paths=paths)
 
     # Store the site wide routes map:
     config['routes.map'] = map
@@ -162,7 +162,7 @@ def load_environment(global_conf, app_conf, websetup=False):
     # Store the site wide globals:
     config['pylons.app_globals'] = g
     
-    config['pylons.h'] = webadmin.lib.helpers
+    config['pylons.h'] = evasion.web.lib.helpers
 
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
