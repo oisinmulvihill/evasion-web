@@ -15,16 +15,27 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-Name='evasion-webadmin'
+Name='evasion-web'
 ProjecUrl="" #""
 Version='1.0.0'
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
-Summary='Local/Remote web admin application for director and its running processes.'
+Summary='Pylons based web application framework on which the director admin is based.'
 License=''
 ShortDescription=Summary
-Description=Summary
+Description=r"""Pylons based web application framework on which the director admin is based.
+
+The evasion.web framework is 99% Pylons. I don't like calling it a framework,
+but I cannot think of a better description. It differs from Pylons in
+that is allows the loading of python packages with multiple controllers,
+templates, static files. Each python package can be the complete customer
+specific web application or it could be part of the overall application.
+
+This easily allows the componentisation or easy mashup of differing 
+applications.
+
+"""
 
 needed = [
         "Pylons==0.9.7",
@@ -37,7 +48,6 @@ needed = [
         "repoze.what.plugins.ini>=0.2.2",
         "repoze.who-friendlyform>=1.0b2",
         "fcrypt",
-        "tailer",
 #        "evasion-messenger",
 #        "evasion-director",
 ]
@@ -52,7 +62,7 @@ needed = [
 # If new directories are added then I'll need to rerun this command.
 #
 EagerResources = [
-    'webadmin',
+    'evasion',
 ]
 
 ProjectScripts = [
