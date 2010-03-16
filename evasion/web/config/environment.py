@@ -100,7 +100,7 @@ def load_environment(global_conf, app_conf, websetup=False):
     # If nothing is found in the configuration then the default 
     # 'evasion.web' interface will be used.
     #
-    loaded_modules = app_conf.get('webadmin_modules', 'evasion.web')
+    loaded_modules = app_conf.get('web_modules', 'evasion.web')
     loaded_modules = [m for m in loaded_modules.split(',') if m]
     get_log().info("load_environment: director evasion.web modules '%s'." % loaded_modules)
     
