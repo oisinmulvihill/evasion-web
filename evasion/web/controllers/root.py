@@ -17,6 +17,6 @@ class RootController(BaseController):
         
 
     def index(self):
-        return render('/root.mako')
+        return render('root.mako')
 
 

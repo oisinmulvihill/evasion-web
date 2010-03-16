@@ -12,9 +12,9 @@
 
 ## Body 
 <div id="content">
-    <h2>Default Webadmin</h2>
+    <h2>Evasion Web</h2>
     <div>
-        <em>Did you set webadmin_modules in your configuration?</em>
+        Did you set <b><em>web_modules</em></b> in your configuration?
     </div>
 </div>
 

@@ -29,12 +29,6 @@ from paste.httpserver import serve
 from paste.httpserver import server_runner
 from paste.deploy.loadwsgi import NicerConfigParser
 
-# Server class and corresponding 'use=' value in config
-SERVER_USE_VALUE = "egg:Paste#http"
-
-
-# Application factory and corresponding 'use=' value in config
-APP_USE_VALUE = "egg:evasion-web"
 from evasion.web.config.middleware import make_app as app_factory
 
 

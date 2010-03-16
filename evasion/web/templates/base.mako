@@ -34,7 +34,7 @@
 	<meta name="description" content="${ self.description() | trim }" />
 	<meta name="keywords" content="${ self.keywords() | trim }" />
 	<meta name="robots" content="all"/>
-	<title>Evasion Project WebAdmin - ${ self.title() | trim }</title>
+	<title>Evasion Web - ${ self.title() | trim }</title>
 	<script type="text/javascript" src="${h.url_for('/js/jquery-min.js')}"></script> 
 	<link rel='stylesheet' type="text/css" title='style-1' href="${ h.url_for('/css/site.css') }"/>	
 </%def>
@@ -55,22 +55,22 @@
 
 <%def name="menu()">
 
-  <div id="logged-in-user">
-    % if h.auth_details():
-        Welcome ${ h.auth_details()['user'].name }
-    %endif
-  </div>
+##  <div id="logged-in-user">
+##    % if h.auth_details():
+##        Welcome ${ h.auth_details()['user'].name }
+##    %endif
+##  </div>
 
   <ul id="main-menu">
-	%if h.is_authenticated():
-    <li id="inactivetab"><a id="lnk-logout" title='Logout' href="${h.url_for('/logout_handler')}">
-		Log Out</a>
-	</li>
-	%else:
-    <li id="inactivetab"><a id="lnk-login" title='Login' href="${h.url_for('user-login')}">
-		Log In</a>
-	</li>
-	%endif
+##	%if h.is_authenticated():
+##    <li id="inactivetab"><a id="lnk-logout" title='Logout' href="${h.url_for('/logout_handler')}">
+##		Log Out</a>
+##	</li>
+##	%else:
+ ##   <li id="inactivetab"><a id="lnk-login" title='Login' href="${h.url_for('user-login')}">
+##		Log In</a>
+##	</li>
+##	%endif
   </ul>
 </%def>
 
@@ -84,7 +84,7 @@
 			${self.foot()}
 		</div>
 		<div id="site-details">
-			WebAdmin v${h.siteversion}
+			Evasion Web v${h.siteversion}
 		</div>
 	</div>	
 </%def>
