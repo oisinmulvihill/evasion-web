@@ -104,6 +104,8 @@ def load_environment(global_conf, app_conf, websetup=False):
     loaded_modules = [m for m in loaded_modules.split(',') if m]
     get_log().info("load_environment: director evasion.web modules '%s'." % loaded_modules)
     
+    module_rdicts = []
+    
     # Attempt to load and set up the evasion.web modules listed in 
     # the config file. These modules need to be in the path that 
     # the evasion-evasion.web looks in for python imports.
@@ -132,6 +134,7 @@ def load_environment(global_conf, app_conf, websetup=False):
                 if rdict['setup_app']:
                     setup_app_list.append(rdict['setup_app'])
                 g.__dict__[module] = rdict['g']
+                module_rdicts.append((module, rdict))
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
 
             except SystemExit, e:
@@ -171,6 +174,19 @@ def load_environment(global_conf, app_conf, websetup=False):
         module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
         input_encoding='utf-8', default_filters=['escape'],
         imports=['from webhelpers.html import escape'])
+
+    # Store the modules for later reference
+    config['evasion.web.modules'] = {}
+    for module, rdict in module_rdicts:
+        kind = rdict['kind']
+        m = config['evasion.web.modules'].get(kind, dict(kind=kind, modules=[]))
+        m['modules'].append(dict(
+            module=module, 
+            name=rdict['name'],
+            desc=rdict['desc'],
+            setup=rdict,
+        ))
+        config['evasion.web.modules'][kind] = m
 
         
     # Used in middleware.py / websetup function:
