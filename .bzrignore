@@ -1,6 +1,5 @@
 data
-evasion_webadmin.egg-info/*
-evasion_webadmin.egg-info
+*.egg-info*
 temp/
 *.log
 *.cfg
