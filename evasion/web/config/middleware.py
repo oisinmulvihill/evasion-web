@@ -126,6 +126,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     #
     for middleware in middleware_list:
         try:
+            get_log().debug("Calling middleware '%s' - " % middleware)
             app = middleware(app, global_conf, app_conf, middleware_list)
             
         except:

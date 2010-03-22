@@ -130,8 +130,10 @@ def load_environment(global_conf, app_conf, websetup=False):
                 template_list.append(rdict['templates'])
                 map = rdict['map']
                 if rdict['middleware']:
+                    get_log().debug("load_environment: appending middleware to list: %s" % rdict['middleware'])
                     middleware_list.append(rdict['middleware'])
                 if rdict['setup_app']:
+                    get_log().debug("load_environment: appending to setup app list: %s" % rdict['setup_app'])
                     setup_app_list.append(rdict['setup_app'])
                 g.__dict__[module] = rdict['g']
                 module_rdicts.append((module, rdict))

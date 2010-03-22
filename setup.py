@@ -48,8 +48,6 @@ needed = [
         "repoze.what.plugins.ini>=0.2.2",
         "repoze.who-friendlyform>=1.0b2",
         "fcrypt",
-#        "evasion-messenger",
-#        "evasion-director",
 ]
 
 
@@ -91,6 +89,7 @@ setup(
     eager_resources = EagerResources,
     setup_requires=["PasteScript>=1.6.3"],
     paster_plugins=['PasteScript', 'Pylons'],
+    namespace_packages = ['evasion'],
     #package_data={'webadmin': ['i18n/*/LC_MESSAGES/*.mo']},
     #message_extractors={'webadmin': [
     #        ('**.py', 'python', None),
