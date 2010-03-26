@@ -211,7 +211,8 @@ class Run(object):
 
     def setUpStomp(self):
         """Connect to the broker so we can send/receive messages."""
-        import messenger        
+        # Only import if we use it:
+        from evasion import messenger        
 
         stomp_cfg = dict(
             host = self.cp.get("Messenger", "host"),
@@ -232,7 +233,8 @@ class Run(object):
         
         """
         if self.messengerConf['state'] == 'on':
-            import messenger        
+            # Only import if we use it:
+            from evasion import messenger        
             self.setUpStomp()
         
             self.log.info("main: running mainloop until done.")
