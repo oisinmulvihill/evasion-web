@@ -125,13 +125,33 @@ def load_environment(global_conf, app_conf, websetup=False):
         else:
             try:
                 rdict = m.configure(map, global_conf, app_conf, websetup)
-                controller_list.append(rdict['controllers'])
-                static_dir_list.append(rdict['static'])
-                template_list.append(rdict['templates'])
+                
+                c = rdict['controllers']
+                if type(c) == type([]) or type(c) == type((0,)):
+                    for p in rdict['controllers']:
+                        controller_list.append(p)
+                else:
+                    controller_list.append(c)
+                    
+                c = rdict['static']
+                if type(c) == type([]) or type(c) == type((0,)):
+                    for p in rdict['static']:
+                        static_dir_list.append(p)
+                else:
+                    static_dir_list.append(rdict['static'])
+                    
+                c = rdict['templates']
+                if type(c) == type([]) or type(c) == type((0,)):
+                    for p in rdict['templates']:
+                        template_list.append(p)
+                else:
+                    template_list.append(rdict['templates'])
+                    
                 map = rdict['map']
                 if rdict['middleware']:
                     get_log().debug("load_environment: appending middleware to list: %s" % rdict['middleware'])
                     middleware_list.append(rdict['middleware'])
+                    
                 if rdict['setup_app']:
                     get_log().debug("load_environment: appending to setup app list: %s" % rdict['setup_app'])
                     setup_app_list.append(rdict['setup_app'])
