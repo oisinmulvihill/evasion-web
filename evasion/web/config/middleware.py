@@ -148,9 +148,15 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     if asbool(static_files):
         # Serve static files
-        static_apps = [
-            StaticURLParser(path) for path in config['pylons.paths']['static_files']
-        ]
+        static_apps = []
+        for p in  config['pylons.paths']['static_files']:
+            # unwind the list of static paths:
+            if type(p) in (type([]), type((0,))):
+                for a in p:
+                    static_apps.append(StaticURLParser(a))
+            else:
+                static_apps.append(StaticURLParser(p))
+            
         app = Cascade(static_apps + [app,])
 
 
