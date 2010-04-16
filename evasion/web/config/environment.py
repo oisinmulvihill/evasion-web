@@ -69,6 +69,7 @@ def load_environment(global_conf, app_conf, websetup=False):
             loaded_modules = [ ... ],
             setup_app_list = [ ..setup_app function list..],
             middleware_list = [ ..functions like default_middleware or default_auth.. ],
+            model_manager = model_manager,
         )
 
     """
@@ -83,6 +84,10 @@ def load_environment(global_conf, app_conf, websetup=False):
         default_middleware, 
         default_auth,
     ]
+    
+    # Used to store the model manager. Only one is allowed
+    # per web application:
+    model_manager = None
     
     # Create the base routing
     map = make_map()
@@ -126,36 +131,75 @@ def load_environment(global_conf, app_conf, websetup=False):
             try:
                 rdict = m.configure(map, global_conf, app_conf, websetup)
                 
-                c = rdict['controllers']
-                if type(c) == type([]) or type(c) == type((0,)):
-                    for p in rdict['controllers']:
-                        controller_list.append(p)
-                else:
-                    controller_list.append(c)
+                # Add the modules controller path(s) if present:                    
+                if 'controllers' in rdict and rdict['controllers']:
+                    c = rdict['controllers']
+                    if type(c) == type([]) or type(c) == type((0,)):
+                        for p in rdict['controllers']:
+                            controller_list.append(p)
+                    else:
+                        controller_list.append(c)
                     
-                c = rdict['static']
-                if type(c) == type([]) or type(c) == type((0,)):
-                    for p in rdict['static']:
-                        static_dir_list.append(p)
-                else:
-                    static_dir_list.append(rdict['static'])
+                # Add the modules static path(s) if present:                    
+                if 'static' in rdict and rdict['static']:
+                    c = rdict['static']
+                    if type(c) == type([]) or type(c) == type((0,)):
+                        for p in rdict['static']:
+                            static_dir_list.append(p)
+                    else:
+                        static_dir_list.append(rdict['static'])
+
+                # Add the modules template path(s) if present:                    
+                if 'templates' in rdict and rdict['templates']:
+                    c = rdict['templates']
+                    if type(c) == type([]) or type(c) == type((0,)):
+                        for p in rdict['templates']:
+                            template_list.append(p)
+                    else:
+                        template_list.append(rdict['templates'])
                     
-                c = rdict['templates']
-                if type(c) == type([]) or type(c) == type((0,)):
-                    for p in rdict['templates']:
-                        template_list.append(p)
-                else:
-                    template_list.append(rdict['templates'])
-                    
-                map = rdict['map']
-                if rdict['middleware']:
+                # The updated routes instance with the modules mappings added:
+                if 'map' in rdict and rdict['map']:
+                    map = rdict['map']
+                
+                if 'middleware' in rdict and rdict['middleware']:
                     get_log().debug("load_environment: appending middleware to list: %s" % rdict['middleware'])
                     middleware_list.append(rdict['middleware'])
                     
-                if rdict['setup_app']:
+                # Set up the modules global instance:
+                if 'g' in rdict and rdict['g']:
+                    g.__dict__[module] = rdict['g']
+                
+                # Add the modules setup_app if present so we can do a paster setup-app later on:
+                if 'setup_app' in rdict and rdict['setup_app']:
                     get_log().debug("load_environment: appending to setup app list: %s" % rdict['setup_app'])
                     setup_app_list.append(rdict['setup_app'])
-                g.__dict__[module] = rdict['g']
+                    
+                # Add the web applications model manager (derived from evasion.web.lib.modelmanager.ModelManager).
+                # Only one of these istances is allowed per application:
+                #
+                if 'modelmanager' in rdict and rdict['modelmanager']:
+                    if model_manager:
+                        msg = "The model manager is set and the module '%s' is trying to replace!" % (rdict['name'])
+                        get_log().error("load_environment: %s" % msg)
+                        raise ValueError(msg)
+                    else:    
+                        model_manager = rdict['modelmanager']
+                        get_log().debug("load_environment: ModelManager instance set up: %s" % model_manager)
+                    
+                # Add the module's model to the ModelManager. The ModelManager must have been
+                # set up before any models returned from modules:
+                #
+                if 'model' in rdict and rdict['model']:
+                    if model_manager:
+                        model_manager.addModel(rdict['model'])
+                    else:    
+                        msg = "The module '%s' provides a model, however no ModelManager has been set by any module so far!" % (rdict['name'])
+                        get_log().error("load_environment: %s" % msg)
+                        raise ValueError(msg)
+
+                # Store this module/rdict for later reference:
+                #                
                 module_rdicts.append((module, rdict))
                 get_log().debug("load_environment: configure() returned:\n%s\n" % pprint.pformat(rdict))
 
@@ -172,7 +216,7 @@ def load_environment(global_conf, app_conf, websetup=False):
         root=root,
         controllers=controller_list, 
         static_files=static_dir_list,
-        templates=template_list ,
+        templates=template_list,
     )
 
     # Initialize config with the basic options
@@ -197,7 +241,7 @@ def load_environment(global_conf, app_conf, websetup=False):
         input_encoding='utf-8', default_filters=['escape'],
         imports=['from webhelpers.html import escape'])
 
-    # Store the modules for later reference
+    # Store the modules for later reference:
     config['evasion.web.modules'] = {}
     for module, rdict in module_rdicts:
         kind = rdict['kind']
@@ -210,6 +254,15 @@ def load_environment(global_conf, app_conf, websetup=False):
         ))
         config['evasion.web.modules'][kind] = m
 
+    # Store the model manager for later reference and 
+    # then call the the init to perform any needed db
+    # set up (not including schema creation/destruction)
+    # 
+    config['evasion.web.modelmanager'] = model_manager
+    if model_manager:
+        get_log().info("load_environment: calling model manager init.")
+        model_manager.init(websetup)
+    
         
     # Used in middleware.py / websetup function:
     #
@@ -217,6 +270,7 @@ def load_environment(global_conf, app_conf, websetup=False):
         loaded_modules = loaded_modules,
         setup_app_list = setup_app_list,
         middleware_list = middleware_list,
+        model_manager=model_manager,
     )
 
 
