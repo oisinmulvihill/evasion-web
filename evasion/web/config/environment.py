@@ -261,7 +261,8 @@ def load_environment(global_conf, app_conf, websetup=False):
     config['evasion.web.modelmanager'] = model_manager
     if model_manager:
         get_log().info("load_environment: calling model manager init.")
-        model_manager.init(websetup)
+        model_manager.dbsetup = websetup
+        model_manager.init()
     
         
     # Used in middleware.py / websetup function:
