@@ -164,7 +164,12 @@ class Run(object):
         controller will also be able to stop the webapp via shutdown.
         
         """
-        self.setUpStomp()
+        # You don't need this in integration mode as it is part
+        # of the director's messaging system. If this is kept in
+        # it will cause messages to be resent onto the message
+        # bus in error.
+        #
+        #self.setUpStomp()
         
         self.log.info("directorIntegrationStart: creating wsgi_app")
         wsgi_app = self.appmainSetup()
