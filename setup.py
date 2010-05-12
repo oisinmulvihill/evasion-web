@@ -16,7 +16,7 @@ except ImportError:
     from setuptools import setup, find_packages
 
 Name='evasion-web'
-ProjecUrl="" #""
+ProjecUrl=""
 Version='1.0.0'
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
