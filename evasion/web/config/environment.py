@@ -57,6 +57,25 @@ def default_auth(app, global_conf, app_conf, middleware_list):
     
     return app
 
+    
+def no_modules_routes(map, controller_list, static_dir_list, template_list):
+    """If there are no routes present this will add a default page to tell this.
+    """
+    if not map._routenames:
+        base = "evasion.web.controllers.%s"
+        map.connect('root', '/', controller=base % 'root', action='index')
+        
+        # Add in the paths to the evasion.web internal files:
+        #
+        from evasion.web import public as static
+        static_dir_list.append(os.path.abspath(static.__path__[0]))
+        from evasion.web import templates
+        template_list.append(os.path.abspath(templates.__path__[0]))
+        from evasion.web import controllers
+        controller_list.append(os.path.abspath(controllers.__path__[0]))
+        
+    return map
+    
 
 def load_environment(global_conf, app_conf, websetup=False):
     """Configure the Pylons environment via the ``pylons.config``
@@ -209,6 +228,12 @@ def load_environment(global_conf, app_conf, websetup=False):
             except:
                 get_log().exception("load_environment: module '%s' configuration error - " % module)
                 
+
+    # If there are no routes add the default page entry
+    # to highlight this along with its controller/static/
+    # template paths.
+    map = no_modules_routes(map, controller_list, static_dir_list, template_list)
+    
     # Save the routes mapping:
     config['routes.map'] = map
     
@@ -221,7 +246,7 @@ def load_environment(global_conf, app_conf, websetup=False):
 
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='evasion.web', paths=paths)
-
+    
     # Store the site wide routes map:
     config['routes.map'] = map
     
