@@ -101,10 +101,17 @@ def load_environment(global_conf, app_conf, websetup=False):
     static_dir_list = []
     setup_app_list = []
     loaded_modules = []
-    middleware_list = [
-        default_middleware, 
-        default_auth,
-    ]
+    middleware_list = []
+    
+    enable_default_middleware = app_conf.get('enable_default_middleware', 'true')
+    if enable_default_middleware.lower() == 'true':
+        get_log().info("load_environment: enabling default middleware (enable_default_middleware = true).")
+        middleware_list.append(default_middleware)
+
+    enable_default_auth = app_conf.get('enable_default_auth', 'false')
+    if enable_default_auth.lower() == 'true':
+        get_log().info("load_environment: enabling default auth middleware (enable_default_auth = true).")
+        middleware_list.append(default_auth)
     
     # Used to store the model manager. Only one is allowed
     # per web application:
