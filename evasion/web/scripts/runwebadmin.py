@@ -68,7 +68,7 @@ class Run(object):
         self.cp.read(self.iniFile)
         self.globalConf = self.cp.defaults()
         
-        self.cp._defaults.setdefault("here", config_dir)
+        self.cp._defaults.setdefault("here", os.path.abspath(os.curdir))
         self.cp._defaults.setdefault("__file__", self.iniFile)
         self.serverConf = self.getConfig(self.cp, "server:main", "egg:Paste#http")
         self.appConf = self.getConfig(self.cp, "app:main", "egg:evasion-web")

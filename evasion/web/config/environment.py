@@ -62,6 +62,8 @@ def no_modules_routes(map, controller_list, static_dir_list, template_list):
     """If there are no routes present this will add a default page to tell this.
     """
     if not map._routenames:
+        get_log().warn("No modules loaded or no routes configured! Adding defaults.")
+    
         base = "evasion.web.controllers.%s"
         map.connect('root', '/', controller=base % 'root', action='index')
         
@@ -257,7 +259,7 @@ def load_environment(global_conf, app_conf, websetup=False):
     config['pylons.app_globals'] = g
     
     config['pylons.h'] = evasion.web.lib.helpers
-
+    
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
         directories=paths['templates'],

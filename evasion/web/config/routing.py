@@ -27,9 +27,9 @@ def directory_scanner():
     returned = []
     
     for directory in config['pylons.paths']['controllers']:
-        get_log().debug("controller_scan: looking for controllers in '%s'." % directory)
+        #get_log().debug("controller_scan: looking for controllers in '%s'." % directory)
         rc = controller_scan(directory)
-        get_log().debug("controller_scan: found controllers '%s'." % str(rc))
+        #get_log().debug("controller_scan: found controllers '%s'." % str(rc))
         returned.extend(rc)
     
     return returned
