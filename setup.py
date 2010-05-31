@@ -64,7 +64,7 @@ EagerResources = [
 ]
 
 ProjectScripts = [
-    'scripts/runwebadmin',
+    'scripts/runweb',
 ]
 
 PackageData = {
