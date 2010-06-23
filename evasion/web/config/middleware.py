@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Pylons middleware initialization
 """
 import sys
@@ -132,16 +133,22 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
         except:
             get_log().exception("Error configuring middleware '%s' - " % middleware)
 
-    if asbool(full_stack):
-        # Handle Python exceptions
-        app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
+    enable_default_errorhandling = app_conf.get('enable_default_errorhandling', 'true')
+    if enable_default_errorhandling.lower() == 'true':
+        get_log().info("load_environment: enabling default error handling middleware (enable_default_errorhandling = true).")
+        if asbool(full_stack):
+            # Handle Python exceptions
+            app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
 
-        # Display error documents for 401, 403, 404 status codes (and
-        # 500 when debug is disabled)
-        if asbool(config['debug']):
-            app = StatusCodeRedirect(app)
-        else:
-            app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
+            # Display error documents for 401, 403, 404 status codes (and
+            # 500 when debug is disabled)
+            if asbool(config['debug']):
+                app = StatusCodeRedirect(app)
+            else:
+                app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
+    else:
+        get_log().warn("load_environment: default error handling middleware disabled (enable_default_errorhandling = false).")
+    
 
     # Establish the Registry for this application
     app = RegistryManager(app)

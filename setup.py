@@ -17,7 +17,7 @@ except ImportError:
 
 Name='evasion-web'
 ProjecUrl=""
-Version='1.0.1'
+Version='1.1.0'
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
