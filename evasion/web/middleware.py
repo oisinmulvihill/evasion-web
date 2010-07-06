@@ -76,7 +76,10 @@ class ErrorHandler(ErrorMiddleware):
             #
             returned_status = "400 Bad Request"
             
-            exc_type, exc_value, traceback = exc_info
+            exc_type, exc_value, trace_back = exc_info
+            
+            #import traceback
+            #self.log.warn("%s: (traceback debug)\n%s\n" % (returned_status, "".join(traceback.format_tb(trace_back))))
     
             # Give the import path of exc_type. This will be used on the other 
             # side to import and re-raise the same exception and error message.
