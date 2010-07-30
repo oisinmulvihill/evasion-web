@@ -74,7 +74,7 @@ PackageData = {
 # Make executable versions of the scripts:
 EntryPoints = {
     'console_scripts': [
-        'runweb = evasion.director.scripts.main:main',
+        'runweb = evasion.web.scripts.main:main',
     ]
 }
 

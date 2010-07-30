@@ -47,7 +47,7 @@ class Run(object):
         used in the evasion.web.script directory
         
         """
-        self.log = logging.getLogger('evasion.web.scripts.runwebadmin.Run')
+        self.log = logging.getLogger('evasion.web.scripts.runweb.Run')
         config_dir = os.path.dirname(__file__)
 
         if not ini_file:
