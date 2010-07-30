@@ -17,7 +17,7 @@ except ImportError:
 
 Name='evasion-web'
 ProjecUrl=""
-Version='1.1.0'
+Version='1.1.1'
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
@@ -71,6 +71,14 @@ PackageData = {
     '': ['*.*'],
 }
 
+# Make executable versions of the scripts:
+EntryPoints = {
+    'console_scripts': [
+        'runweb = evasion.director.scripts.main:main',
+    ]
+}
+
+
 setup(
 #    url=ProjecUrl,
     name=Name,
@@ -87,20 +95,9 @@ setup(
     packages=find_packages(),
     package_data=PackageData,
     eager_resources = EagerResources,
+    entry_points = EntryPoints,
     setup_requires=["PasteScript>=1.6.3"],
     paster_plugins=['PasteScript', 'Pylons'],
     namespace_packages = ['evasion'],
-    #package_data={'webadmin': ['i18n/*/LC_MESSAGES/*.mo']},
-    #message_extractors={'webadmin': [
-    #        ('**.py', 'python', None),
-    #        ('templates/**.mako', 'mako', {'input_encoding': 'utf-8'}),
-    #        ('public/**', 'ignore', None)]},
-    #entry_points="""
-    #[paste.app_factory]
-    #main = webadmin.config.middleware:make_app
-    #
-    #[paste.app_install]
-    #main = pylons.util:PylonsInstaller
-    #""",
 )
 

@@ -1,6 +1,6 @@
 #!python
-from evasion.web.scripts import runwebadmin
+from evasion.web.scripts import main
 
 if __name__ == "__main__":
-    runwebadmin.main()
+    main.main()
 
