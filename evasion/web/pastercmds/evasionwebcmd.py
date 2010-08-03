@@ -22,6 +22,7 @@ vars = [
     var('url', 'URL of homepage'),
     var('license_name', 'License name', 'Commercial, All rights reserved.'),
     var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
+    var('dollar', 'template hack to generate mako ${} expression (please ignore)','$'),
 ]
 
 class ProjectTemplate(Template):

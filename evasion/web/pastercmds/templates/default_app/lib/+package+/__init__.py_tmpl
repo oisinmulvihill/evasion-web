@@ -68,11 +68,12 @@ def configure(map, global_conf, app_conf, websetup):
     static_dir = os.path.abspath(static.__path__[0])
     templates_dir = os.path.abspath(templates.__path__[0])
     
-    base = '${package}.controllers.base.%s'
+    base = '${package}.controllers.root'
     
     # Example map useage: Root site page:
     #
-    #map.connect('root', '/', controller=base % 'root', action='index')
+    map.connect('root', '/', controller=base, action='index')
+    map.connect('pagetwo', '/2/', controller=base, action='page2')
     
     # Example global object for this module. If you don't want it set g = None.
     class Handy(object):
