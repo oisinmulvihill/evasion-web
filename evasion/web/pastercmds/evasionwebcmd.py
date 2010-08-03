@@ -67,27 +67,27 @@ class CreateAppCmd(Command):
     shortly.
     
     """
-        # Parser configuration
-        summary = "Create an Evasion Web app which can be used in an evasion project."
-        usage = """ <new app name>
+    # Parser configuration
+    summary = "Create an Evasion Web app which can be used in an evasion project."
+    usage = """ <new app name>
 
 Create a new Evasion Web app called <new app name>.
 
 This will create an initial python package you can then use.
 
 """
-        group_name = "evasion"
-        parser = Command.standard_parser(verbose=False)
+    group_name = "evasion"
+    parser = Command.standard_parser(verbose=False)
 
-        def command(self):
-                import pprint
-                print "Hello, CreateAppCmd script world!"
-                print
-                print "My options are:"
-                print "    ", pprint.pformat(vars(self.options))
-                print "My args are:"
-                print "    ", pprint.pformat(self.args)
-                print
-                print "My parser help is:"
-                print
-                print self.parser.format_help()
+    def command(self):
+        import pprint
+        print "Hello, CreateAppCmd script world!"
+        print
+        print "My options are:"
+        print "    ", pprint.pformat(vars(self.options))
+        print "My args are:"
+        print "    ", pprint.pformat(self.args)
+        print
+        print "My parser help is:"
+        print
+        print self.parser.format_help()
