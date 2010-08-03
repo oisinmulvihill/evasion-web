@@ -1,0 +1,35 @@
+import logging
+
+from pylons import config
+from routes import url_for
+from pylons import request, response, session, tmpl_context as c
+from pylons.controllers.util import abort, redirect_to
+from repoze.what.predicates import not_anonymous
+from repoze.what.predicates import has_permission
+from repoze.what.plugins.pylonshq import ActionProtector
+
+from evasion.web.lib.base import BaseController, render
+
+from atmadmin.controllers import utils
+
+
+class RootController(BaseController):
+
+    def __init__(self, *args, **kw):
+        BaseController.__init__(self, *args, **kw)
+        self.log = logging.getLogger('${package}.controllers.root.RootController')
+
+    def index(self):
+        """Site root"""
+        self.log.debug("root: here - index ")
+        
+        return render('root.mako')
+
+    def page2(self):
+        """a second page"""
+        self.log.debug("page2: here - index ")
+        
+        return render('page2.mako')
+
+
+    

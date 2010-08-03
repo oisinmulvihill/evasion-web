@@ -1,0 +1,78 @@
+<%doc> 
+	Mako Base Master Template Example. 
+</%doc>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+    <head>
+		${dollar}{local.heading()}
+		${dollar}{self.heading()}
+    </head>
+    <body>
+        <div id="header-pickout">&nbsp;</div>
+		<div id="main">
+            ${dollar}{next.header()} 
+			
+            <div id="content">
+                ${dollar}{next.body()} 
+                <div class="clear">&nbsp;</div>
+            </div>
+            
+            ${dollar}{local.footer()} 
+		</div>
+    </body>
+</html>
+
+<%def name="heading()">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="EvasionProject" />
+	<meta name="description" content="${dollar}{ self.description() | trim }" />
+	<meta name="keywords" content="${dollar}{ self.keywords() | trim }" />
+	<meta name="robots" content="all"/>
+	<title>Example - ${dollar}{ self.title() | trim }</title>
+	<link rel='stylesheet' type="text/css" title='style-1' href="${dollar}{ h.url_for('/${package}/css/site.css') }"/>	
+</%def>
+
+<%def name="header()">
+	<div id="header">
+        <img id="logo" src="${dollar}{ h.url_for('/${package}/images/logo.png') }"
+                 alt="EvasionProject Logo" title="EvasionProject Logo."/>
+        ${dollar}{self.menu()} 
+	</div>
+</%def>
+
+## Things you can over to aid search engine rankings: 
+##
+<%def name="title()"></%def>
+<%def name="keywords()"></%def>
+<%def name="description()"></%def>
+
+<%def name="menu()">
+  
+  <ul id="main-menu">
+    <li id="inactivetab"><a id="lnk-home" title='Home link.' href="${dollar}{h.url_for('root')}">
+		Home</a>
+	</li>
+    <li id="inactivetab"><a id="lnk-home" title='Home link.' href="${dollar}{h.url_for('pagetwo')}">
+		Page Two</a>
+	</li>
+    </ul>
+</%def>
+
+<%def name="submenu()"></%def>
+
+<%def name="footer()">
+	<div id="footer">
+        ${package}
+	</div>	
+</%def>
+
+<script type="text/javascript">
+${dollar}(document).ready(function(){
+    /*pre load busy image so it displays faster*/
+    Image1= new Image();
+    Image1.src = "${dollar}{ h.url_for('/${package}/images/rotating_arrow.gif') }";
+});
+</script>
+
+
+

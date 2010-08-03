@@ -1,0 +1,163 @@
+/* Based on evasion-webadmin default css - Oisin 2010-02-18.*/
+/* reset */
+* {margin:0;padding:0;color:#343434;font-family:Verdana,Arial,sans-serif;font-size:11px;line-height:1.4em;}
+a, span, strong {font-size:1em;}
+span {color:inherit;}
+img {border:none;}
+body{}
+h1, h2, h3, p {margin-bottom:10px;}
+h1, h2, h3
+h1 span, h2 span, h3 span {color:#9c2222;}
+h1 {font-size:1.2em;}
+h2 {font-size:1.0em;}
+h3 {font-size:1em;}
+p {padding:0 10px 0 0;}
+a, a:visited {text-decoration:underline;}
+a:hover, a.current {text-decoration:underline;}
+
+
+/* items outside of central block - general fancy pancy effects */
+#header-pickout {
+    position: absolute;
+    top: 0px;
+    float: left;
+    height: 115px;
+    width: 100%;
+    background-color: #dedede;
+    background-image: url('/${package}/images/back.png');
+    background-repeat: repeat-x;
+}
+
+
+/* Create the centered 'central' content block in the browser*/
+div#main {
+  /* fixed block:*/
+  width: 750px;
+}
+
+body {
+    text-align: center;
+    background-color: #bebebe;
+    background-image: url('/${package}/images/body_back.png');
+}
+
+div#main {
+  width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Now layout the main parts of the centered block: header, content and footer. */
+#logo {
+    display:inline; 
+    position:relative; 
+    left:4px; 
+    top:4px; 
+    overflow:hidden; 
+}
+
+#logged-in-user {
+    float:right; 
+    position:absolute; 
+    right:10px; 
+    top: 4px;
+    border-bottom: 1px dashed black;
+}
+
+#header, #content {
+    background-color: white;
+}
+
+#header {
+    position:relative; 
+    height:115px;
+    border-bottom: 1px solid #bababa;
+    border-left: 1px solid #bababa;
+    border-right: 1px solid #bababa;
+}
+
+#footer {
+    font-size: 10pt;
+    font-style: italic;
+    text-align: right;
+    background-color: white;
+    border-top: 1px solid #bababa;
+}
+
+#content {
+    padding: 10px;
+}
+
+#content, #footer {
+    padding: 4px 6px 6px 4px;
+}
+
+#main {
+    border: 1px solid #bababa;
+}
+
+ul#main-menu {
+    position:absolute; 
+    right:5px; 
+    top:95px;
+}
+ul#main-menu li {
+    float:left; 
+    list-style:none; 
+    text-align:center;
+    width: 90px;
+    height: 20px;
+    background: url('/${package}/images/tab_inactive.png') no-repeat;
+    margin-left: 2px;
+}
+ul#main-menu li a, ul#main-menu li a:visited {
+    line-height: 18px;
+    padding:10px; 
+    /*color:#696a68; */
+    color: black;
+    font-weight: bold;
+    text-decoration:none;
+}
+ul#main-menu li a:hover, ul#main-menu li a.current {
+    color:#9c2222; 
+    text-decoration:underline;
+}
+
+
+/* repeated styles */
+.clear {clear:both;}
+.bottom-border {border-bottom:1px solid #c5c6c8;}
+.strong {font-weight:bold;}
+.back {margin-top:20px;}
+.back a {color:#9c2222;}
+.col-l, .col-r {float:left; width:50%;}
+.col-l h2, .col-r h2 {font-weight:normal;}
+
+
+#quickstart {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+/* Site wide messages */
+.message{
+    width: 100%;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+.message span {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 4px
+}
+.error-message {
+    border: 1px solid red;
+}
+.ok-message {
+    border: 1px solid green;
+}
+
+

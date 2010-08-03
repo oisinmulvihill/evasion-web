@@ -1,0 +1,32 @@
+<%doc>
+	Site Root Page
+</%doc>
+<%inherit file="base.mako"/>
+
+## Head Resources
+<%def name="heading()">
+    <script type="text/javascript" src="${dollar}{ h.url_for('/${package}/js/site.js') }"></script>
+    
+    <style type="text/css">
+        #highlight-me {
+            padding: 4px;
+            margin: 4px;
+            border: 1px dashed orange;
+        }
+    </style>
+</%def>
+
+## Body 
+<div id="root-page">
+    <h1>Hello there!</h1>
+    <div id="quickstart">
+        <ol>
+            <li>
+               Package: <em>${dollar}{ g.${package}.version }</em>
+            </li>
+            <li id="highlight-me">
+                <input type="button" value="Click Me" onclick="javascript:${package}.hellothere();"/>
+            </li>
+        </ol>
+    </div>
+</div>

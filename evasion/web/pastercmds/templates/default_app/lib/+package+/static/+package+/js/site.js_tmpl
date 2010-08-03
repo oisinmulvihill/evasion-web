@@ -1,0 +1,5 @@
+var ${package} = {};
+
+${package}.hellothere = function () {
+    alert("hello there from: '/${package}/js/site.js'.");
+}

@@ -58,8 +58,6 @@ class AppTemplate(Template):
     _template_dir = 'templates/default_app'
     summary = 'EvasionWeb app plugin creation template.'
     vars = vars
-    
-    
 
 
 class CreateAppCmd(Command):
