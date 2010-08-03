@@ -1,6 +1,12 @@
 """
-"""
+This provides the set up need to provide EvasionWeb specific
+commands in paster. This module provides customer Project and
+App template creation as well as other useful commands.
 
+Oisin Mulvihill
+2010-08-03
+
+"""
 # http://pythonpaste.org/script/developer.html
 #
 from paste.script.command import Command
@@ -14,17 +20,40 @@ vars = [
     var('author', 'Author name'),
     var('author_email', 'Author email'),
     var('url', 'URL of homepage'),
-    var('license_name', 'License name'),
-    var('zip_safe', 'True/False: if the package can be distributed as a .zip file',
-        default=False),
+    var('license_name', 'License name', 'Commercial, All rights reserved.'),
+    var('zip_safe', 'True/False: if the package can be distributed as a .zip file', default=False),
 ]
 
 class ProjectTemplate(Template):
+    """Set up to create an EvasionWeb project.
+    
+    This is simply a configuration file, some
+    basic user/group/permission auth setup and
+    an empty package.
+    
+    runweb is run from this folder to pickup
+    development.ini and the App plugins to 
+    load.
+    
+    """
     _template_dir = 'templates/default_project'
     summary = 'EvasionWeb Project creation template.'
     vars = vars
 
+
 class AppTemplate(Template):
+    """Set up to create EvasionWeb App plugin.
+    
+    Once this is in the Python path, then the 
+    app's package name can be included in the
+    development.ini::
+    
+        :
+        [app:main]
+        web_modules = <package name>,
+        :
+    
+    """
     _template_dir = 'templates/default_app'
     summary = 'EvasionWeb app plugin creation template.'
     vars = vars
@@ -33,6 +62,11 @@ class AppTemplate(Template):
 
 
 class CreateAppCmd(Command):
+    """
+    Example command class. I'll do something useful with this 
+    shortly.
+    
+    """
         # Parser configuration
         summary = "Create an Evasion Web app which can be used in an evasion project."
         usage = """ <new app name>
