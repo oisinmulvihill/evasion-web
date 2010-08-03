@@ -74,7 +74,7 @@ def configure(map, global_conf, app_conf, websetup):
     #
     #map.connect('root', '/', controller=base % 'root', action='index')
     
-    # Example global object for this module. If you don't want it sert g = None.
+    # Example global object for this module. If you don't want it set g = None.
     class Handy(object):
         def __init__(self):
             self.version = "'Package:Version = '${package}:${version}'"
@@ -83,7 +83,7 @@ def configure(map, global_conf, app_conf, websetup):
 
     # Example of adding custom middle ware call
     #
-    def custom_middleware_handler():
+    def custom_middleware_handler(app, global_conf, app_conf, middleware_list):
         print "Example custom_middleware_handler for '${package}'."
         return app
         

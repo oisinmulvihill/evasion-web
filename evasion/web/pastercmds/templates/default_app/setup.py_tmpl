@@ -1,5 +1,5 @@
 """
-EvasionWeb Project: ${project}. 
+EvasionWeb plugin App for ${project}. 
 
 """
 try:
@@ -37,7 +37,7 @@ InstallRequires = [
 #
 #
 EagerResources = [
-#    '${package}',
+    'lib/${package}',
 ]
 
 ProjectScripts = [
@@ -71,8 +71,8 @@ setup(
     packages=find_packages(),
     package_data=PackageData,
     eager_resources = EagerResources,
-    #entry_points = EntryPoints,
-    #setup_requires=["PasteScript>=1.6.3"],
-    #paster_plugins=['PasteScript', 'Pylons'],
+#    entry_points = EntryPoints,
+    setup_requires=["PasteScript>=1.6.3"],
+    paster_plugins=['PasteScript', 'Pylons'],
 ##    namespace_packages = ['<your projects namespace>'],
 )

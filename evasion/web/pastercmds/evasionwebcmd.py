@@ -7,7 +7,7 @@ from paste.script.command import Command
 from paste.script.templates import Template, var
 
 vars = [
-    var('version', 'Version (like 0.1)'),
+    var('version', 'Version (like 0.1)', default='0.1'),
     var('description', 'One-line description of the package'),
     var('long_description', 'Multi-line description (in reST)'),
     var('keywords', 'Space-separated keywords/tags'),
@@ -21,7 +21,12 @@ vars = [
 
 class ProjectTemplate(Template):
     _template_dir = 'templates/default_project'
-    summary = 'Evasion Web Project creation template.'
+    summary = 'EvasionWeb Project creation template.'
+    vars = vars
+
+class AppTemplate(Template):
+    _template_dir = 'templates/default_app'
+    summary = 'EvasionWeb app plugin creation template.'
     vars = vars
     
     

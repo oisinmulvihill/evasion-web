@@ -78,6 +78,7 @@ EntryPoints = {
     
     'paste.paster_create_template' : [
         'evasion.web-project = evasion.web.pastercmds.evasionwebcmd:ProjectTemplate',
+        'evasion.web-app = evasion.web.pastercmds.evasionwebcmd:AppTemplate',
     ],
     
     'paste.paster_command' : [
