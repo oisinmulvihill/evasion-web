@@ -1,0 +1,118 @@
+"""
+This is the ${project} EvasionWeb App. It can be used
+as a plugin to web sites.
+
+"""
+
+def configure(map, global_conf, app_conf, websetup):
+    """Set up the paths and URL routing.
+    
+    :param map: this is a routes map instance we can 
+    add our routes to.
+    
+    :param global_conf: this the pylon global configuration
+    loaded from the projects config file.
+    
+    :param app_conf: this the pylon global configuration
+    loaded from the projects config file.
+    
+    :websetup: This is False by default. If its True it
+    indicates that setup-app is being run, and not a normal
+    web server run. This is used to create database tables 
+    and other once off application set up.
+    
+    :returns: We return a dict in the form:
+
+        dict(
+            # Meta like data which is available to the web site
+            # when the project is running:
+            kind = 'web', # used to classify the app into categories e.g. web, admin, etc.
+            name = '${package}',
+            desc = '${description}',
+            
+            # This is the routes map we add this App's URL
+            # configuration to. If you don't need it just
+            # return it unmodified.
+            map = map,
+
+            # Controllers/Static dirs/Templates. These
+            # can be empty, single path or a list of 
+            # file system paths.
+            #
+            controllers = controllers_dir,
+            static = static_dir,
+            templates = templates_dir,
+            
+            # Optional:
+            #
+            # handy way to add global object for just this package
+            # g.${package}.<object instance>:
+            # 
+            #setup_app = None,
+            #middleware = None,
+            #model = None
+            #model_manager = None
+        )
+    
+    """
+    import os
+    import os.path
+    
+    # Work out where the files are on disk:
+    #
+    import static
+    import templates
+    import controllers
+    
+    controllers_dir = os.path.abspath(controllers.__path__[0])
+    static_dir = os.path.abspath(static.__path__[0])
+    templates_dir = os.path.abspath(templates.__path__[0])
+    
+    base = '${package}.controllers.base.%s'
+    
+    # Example map useage: Root site page:
+    #
+    #map.connect('root', '/', controller=base % 'root', action='index')
+    
+    # Example global object for this module. If you don't want it sert g = None.
+    class Handy(object):
+        def __init__(self):
+            self.version = "'Package:Version = '${package}:${version}'"
+
+    g = Handy()
+
+    # Example of adding custom middle ware call
+    #
+    def custom_middleware_handler():
+        print "Example custom_middleware_handler for '${package}'."
+        return app
+        
+    middleware = custom_middleware_handler
+    
+
+    # Example function which will be called why --setup-app is used
+    # via a call to runweb
+    #
+    def setup_app(command, conf, vars):
+        print "Example setup_app for '${package}'."
+        
+        
+    return dict(
+        kind = 'web',
+        name = '${package}',
+        desc = '${description}',
+        map = map,
+        
+        # General config (can be optional):
+        controllers = controllers_dir,
+        static = static_dir,
+        templates = templates_dir,
+        
+        # Optional extras:
+        g = g,
+        setup_app = setup_app,
+        middleware = middleware,
+        modelmanager = None,
+        model = None,
+    )
+

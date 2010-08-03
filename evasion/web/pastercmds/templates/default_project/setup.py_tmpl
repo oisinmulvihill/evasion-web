@@ -1,0 +1,80 @@
+"""
+The distutils setup for ${project}. It can be used to include
+custom packages or list the EvasionWeb Apps the project uses.
+
+"""
+try:
+    from setuptools import setup, find_packages
+    
+except ImportError:
+    from ez_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup, find_packages
+
+    
+Name='${project}'
+ProjecUrl=${repr(url)}
+Version='${version}'
+Author=${repr(author)}
+AuthorEmail=${repr(author_email)}
+Maintainer=${repr(author)}
+Summary=${repr(description)}
+License=''
+ShortDescription=Summary
+Description=Summary
+TestSuite = 'nose.collector'
+InstallRequires = [
+    'evasion-web',
+    
+    # you can list the EvasionWeb App(s) you depend 
+    # on here or other python dependancies.
+]
+
+# Only directories with a package init are found be eager resources.
+# You need create or run this command (cygwin/linux/mac) to pickup new 
+# content:
+#
+#  find <package or folder> -type d -exec touch {}//__init__.py \;
+#
+#
+EagerResources = [
+    # Some folder / package dir with non python files to include:
+    # 'lib/',
+]
+
+ProjectScripts = [
+    # For example:
+    #    'console_scripts': [
+    #        'myexe = <package path>:<main function to call>',
+    #    ],
+    # This produce myexe.exe (windows) / myexe (linux,etc) which 
+    # could be used as the main command line tool program.
+    #
+]
+
+PackageData = {
+    # Include every file type in the egg file:
+    #'': ['*.*'],
+}
+
+setup(
+    url=ProjecUrl,
+    name=Name,
+    zip_safe=${zip_safe},
+    version=Version,
+    author=Author,
+    author_email=AuthorEmail,
+    description=ShortDescription,
+    long_description=Description,
+    license=License,
+    #scripts=ProjectScripts,
+    #install_requires=InstallRequires,
+    #include_package_data=True,
+    #packages=find_packages(),
+    #package_data=PackageData,
+    #eager_resources = EagerResources,
+    #entry_points = EntryPoints,
+    #setup_requires=["PasteScript>=1.6.3"],
+    #paster_plugins=['PasteScript', 'Pylons'],
+##    namespace_packages = ['<your projects namespace>'],
+)

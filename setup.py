@@ -74,6 +74,14 @@ PackageData = {
 EntryPoints = {
     'console_scripts': [
         'runweb = evasion.web.scripts.main:main',
+    ],
+    
+    'paste.paster_create_template' : [
+        'evasion.web-project = evasion.web.pastercmds.evasionwebcmd:ProjectTemplate',
+    ],
+    
+    'paste.paster_command' : [
+#        'ev-newapp = evasion.web.pastercmds.evasionwebcmd:CreateAppCmd',
     ]
 }
 

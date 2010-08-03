@@ -256,7 +256,7 @@ def main():
     parser = OptionParser()
                       
     parser.add_option("--config", action="store", dest="config_filename", 
-                    default=None,
+                    default='development.ini',
                     help="This evasion.web configuration file used at run time."
                     )
                       
