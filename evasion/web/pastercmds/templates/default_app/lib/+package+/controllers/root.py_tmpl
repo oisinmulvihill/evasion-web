@@ -10,8 +10,6 @@ from repoze.what.plugins.pylonshq import ActionProtector
 
 from evasion.web.lib.base import BaseController, render
 
-from atmadmin.controllers import utils
-
 
 class RootController(BaseController):
 
