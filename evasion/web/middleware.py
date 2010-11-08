@@ -12,7 +12,7 @@ from weberror.errormiddleware import ResponseStartChecker
 
 
 def get_log():
-    return logging.getLogger('newman.accountservice.middleware')
+    return logging.getLogger('evasion.web.middleware')
 
 
 class ErrorHandler(ErrorMiddleware):
@@ -25,7 +25,7 @@ class ErrorHandler(ErrorMiddleware):
     """
     def __init__(self, *args, **kwargs):
         ErrorMiddleware.__init__(self, *args, **kwargs)
-        self.log = logging.getLogger('newman.accountservice.middleware.ErrorHandler')
+        self.log = logging.getLogger('evasion.web.middleware.ErrorHandler')
         self._logTheTraceback = False
 
 
@@ -131,3 +131,5 @@ def rest_errorhandling_setup(app, global_conf, app_conf, middleware_list):
         app.showTracebacks()
     
     return app
+
+
