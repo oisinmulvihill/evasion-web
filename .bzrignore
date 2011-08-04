@@ -1,9 +1,0 @@
-data
-*.egg-info*
-temp/
-*.log
-*.cfg
-*.ini
-dist
-build
-*.egg
