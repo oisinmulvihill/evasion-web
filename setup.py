@@ -15,8 +15,8 @@ except ImportError:
     from setuptools import setup, find_packages
 
 Name='evasion-web'
-ProjecUrl=""
-Version="1.1.1"
+ProjecUrl="http://github.com/oisinmulvihill/evasion-web/tarball/master#egg=evasion_web"
+Version="1.2dev"
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
@@ -31,16 +31,16 @@ that is allows the loading of python packages with multiple controllers,
 templates, static files. Each python package can be the complete customer
 specific web application or it could be part of the overall application.
 
-This easily allows the componentisation or easy mashup of differing 
+This easily allows the componentisation or easy mashup of differing
 applications.
 
 """
 
 needed = [
         "Pylons==0.9.7",
-        "Paste",        
-        "PasteScript",        
-        "repoze.tm2 >= 1.0a4", 
+        "Paste",
+        "PasteScript",
+        "repoze.tm2 >= 1.0a4",
         "repoze.who == 1.0.18",
         "repoze.what",
         "repoze.what-pylons",
@@ -75,12 +75,12 @@ EntryPoints = {
     'console_scripts': [
         'runweb = evasion.web.scripts.main:main',
     ],
-    
+
     'paste.paster_create_template' : [
         'evasion.web-project = evasion.web.pastercmds.evasionwebcmd:ProjectTemplate',
         'evasion.web-app = evasion.web.pastercmds.evasionwebcmd:AppTemplate',
     ],
-    
+
     'paste.paster_command' : [
 #        'ev-newapp = evasion.web.pastercmds.evasionwebcmd:CreateAppCmd',
     ]
@@ -108,4 +108,3 @@ setup(
     paster_plugins=['PasteScript', 'Pylons'],
     namespace_packages = ['evasion'],
 )
-
