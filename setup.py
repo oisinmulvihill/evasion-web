@@ -20,19 +20,10 @@ Version="1.2dev"
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
-Summary='Pylons based web application framework on which the director admin is based.'
+Summary='A web framework using Pyramids which helps you build Web Applications out of pluggable components.'
 License=''
 ShortDescription=Summary
-Description=r"""Pylons based web application framework on which the director admin is based.
-
-The evasion.web framework is 99% Pylons. I don't like calling it a framework,
-but I cannot think of a better description. It differs from Pylons in
-that is allows the loading of python packages with multiple controllers,
-templates, static files. Each python package can be the complete customer
-specific web application or it could be part of the overall application.
-
-This easily allows the componentisation or easy mashup of differing
-applications.
+Description=r"""A
 
 """
 
