@@ -15,22 +15,18 @@ except ImportError:
     from setuptools import setup, find_packages
 
 Name='evasion-web'
-ProjecUrl="http://github.com/oisinmulvihill/evasion-web/tarball/master#egg=evasion_web"
+ProjecUrl="http://github.com/oisinmulvihill/evasion-web/tarball/pyramid-conversion#egg=evasion_web"
 Version="1.1dev"
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
 Summary='A web framework using Pyramids which helps you build Web Applications out of pluggable components.'
-License=''
+License='Evasion CDDL License.'
+Description=Summary
 ShortDescription=Summary
-Description=r"""A
-
-"""
 
 needed = [
-        "Pyramid",
-        "Paste",
-        "PasteScript",
+    "Pyramid",
 ]
 
 
@@ -56,10 +52,6 @@ EntryPoints = {
         'evasion.web-project = evasion.web.pastercmds.evasionwebcmd:ProjectTemplate',
         'evasion.web-applet = evasion.web.pastercmds.evasionwebcmd:AppletTemplate',
     ],
-
-    'paste.paster_command' : [
-#        'ev-newapp = evasion.web.pastercmds.evasionwebcmd:CreateAppCmd',
-    ]
 }
 
 
@@ -80,7 +72,5 @@ setup(
     package_data=PackageData,
     eager_resources = EagerResources,
     entry_points = EntryPoints,
-    setup_requires=["PasteScript>=1.6.3"],
-    paster_plugins=['PasteScript', 'Pylons'],
     namespace_packages = ['evasion'],
 )
