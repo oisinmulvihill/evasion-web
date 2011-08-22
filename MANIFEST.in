@@ -1,3 +1,1 @@
-include webadmin/config/deployment.ini_tmpl
-recursive-include webadmin/public *
-recursive-include webadmin/templates *
+

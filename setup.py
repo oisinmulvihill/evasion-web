@@ -16,7 +16,7 @@ except ImportError:
 
 Name='evasion-web'
 ProjecUrl="http://github.com/oisinmulvihill/evasion-web/tarball/master#egg=evasion_web"
-Version="1.2dev"
+Version="1.1dev"
 Author='Oisin Mulvihill'
 AuthorEmail='oisinmulvihill at gmail dot com'
 Maintainer=' Oisin Mulvihill'
@@ -28,27 +28,12 @@ Description=r"""A
 """
 
 needed = [
-        "Pylons==0.9.7",
+        "Pyramid",
         "Paste",
         "PasteScript",
-        "repoze.tm2 >= 1.0a4",
-        "repoze.who == 1.0.18",
-        "repoze.what",
-        "repoze.what-pylons",
-        "repoze.what.plugins.ini>=0.2.2",
-        "repoze.who-friendlyform>=1.0b2",
-        "fcrypt",
 ]
 
 
-# Include everything under viewpoint. I needed to add a __init__.py
-# to each directory inside viewpoint. I did this using the following
-# handy command:
-#
-#  find webadmin -type d -exec touch {}//__init__.py \;
-#
-# If new directories are added then I'll need to rerun this command.
-#
 EagerResources = [
     'evasion',
 ]
@@ -69,7 +54,7 @@ EntryPoints = {
 
     'paste.paster_create_template' : [
         'evasion.web-project = evasion.web.pastercmds.evasionwebcmd:ProjectTemplate',
-        'evasion.web-app = evasion.web.pastercmds.evasionwebcmd:AppTemplate',
+        'evasion.web-applet = evasion.web.pastercmds.evasionwebcmd:AppletTemplate',
     ],
 
     'paste.paster_command' : [
@@ -79,7 +64,7 @@ EntryPoints = {
 
 
 setup(
-#    url=ProjecUrl,
+    url=ProjecUrl,
     name=Name,
     zip_safe=False,
     version=Version,
